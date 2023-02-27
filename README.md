@@ -23,13 +23,13 @@ Simply makes `{type:}` answers case insensitive.
 >Simply add this line to the Back Template of your Anki Cards.
 >
 >```html
-><script src="https://derdemystifier.github.io/assets/js/ankiignorecase/ignorecase.min.js"></script>
+><script src="https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js"></script>
 >```
 
 ### I want this to work even when I don't have Internet Access.
 
 >Since the script tag above fetches the script, you need Internet. If that's not always available, then:
->1. Copy the content of the file `ignoreCase.min.js` above.
+>1. Copy the content of the file [`ignoreCase.min.js`](https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js).
 >2. Paste it in the Back Template of your Anki card like so:
 >```html
 ><script>
