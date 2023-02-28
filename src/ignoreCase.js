@@ -53,33 +53,54 @@ function ignoreCases() {
         };
 
 
-        /* The above loop algo only works when Anki positions the letters of input and answer in parallel, which it does in a case sensitive way, so we need to compare the input and answer ourselves. This is not required but an extra touch of evaluation wouldn't hurt.
-        The algorithm is simple: We use the answer as base and start looking in the input for a match, if no match was found, we shift letter from the answer and repeat. If however a match was found, then we mark both letters as correct, we update the entry to start from this position on later repeats, and then we continue until the answer's letter are over. Could be better worded that this, sorry!
+        /* The above loop algo only works when Anki positions matching letters in prallel and marking the rest as wrong. 
+        This part includes cases in which we compare matching parts of words (3+ letters) that show up later in the entry.
+        Example:
+        This case will not work with the algo above because the letters, while correct, are not in the same position:
+        The Bosnia and the Herzegovina
+        ↓
+        Bosnia and Herzegovina
+        Anki by default marks "Bosnia and" + "Herzegovina" in green and "the" in red. This should also be the case if we wrote "THE BOSNIA AND THE HERZEGOVINA". That's what ↓ is about.
+
+        
+        The algorithm is simple: We use the answer as base and start looking in the input for a match, if no match was found, we shift letter from the answer and repeat. If however a match was found, then we mark letters as correct, we update the entry to start from this position on later repeats, and then we continue until the answer's letters are over. Could be better worded that this, sorry!
         */
+
+        /// This the number of letters that must match before we call it a match. Ex. =3 means if a set of 3 letters in input match the exact set in answer, light'em up. Anki AFAIK compares word-by-word. I think parts of words matter too. 
+        const matchLength = 3;
         // While there are still letters in the answer to compare.
         while (answerSpans.length) {
             // Clone the input/entry letters for safekeeping. 
             let entrySpansCopy = [...entrySpans];
 
+
             // While there are letters in the answer or input to compare, whichever is shorter.
-            while (entrySpansCopy.length && answerSpans.length) {
-                if (entrySpansCopy[0].innerText.toLowerCase() == answerSpans[0].innerText.toLowerCase()) {
-                    /* if both letters are a match, 1- We mark both of them as Good 
+            while (entrySpansCopy.length >= matchLength && answerSpans.length >= matchLength) {
+                const firstSetofEntry = entrySpansCopy.slice(0, matchLength);
+                const firstSetofAnswer = answerSpans.slice(0, matchLength);
+                if (constructLetters(firstSetofEntry).toLowerCase() == constructLetters(firstSetofAnswer).toLowerCase()) {
+                    /* if both letters are a match, 
+                    1- We mark both of them as Good
                     2- We drop the letter from both input and answer
                     3- We update entrySpans so it doesn't include the dropped letters in later repeats
                     */
-                    entrySpansCopy[0].setAttribute("class", "typeGood");
-                    // entrySpansCopy[0].innerHTML = answerSpans[0].innerHTML;
-                    answerSpans[0].setAttribute("class", "typeGood");
-                    entrySpans.shift();
-                    entrySpans = entrySpansCopy;
+
+                    firstSetofEntry.forEach(span => {
+                        span.setAttribute("class", "typeGood");
+                    });
+                    firstSetofAnswer.forEach(span => {
+                        span.setAttribute("class", "typeGood");
+                    });
+
+                    entrySpansCopy.shift();
+                    entrySpans = [...entrySpansCopy];
                     answerSpans.shift();
                 } else {
                     // Letter didn't match the answer's. So drop it to test the next one.
                     entrySpansCopy.shift();
                 }
             }
-            // Since we're here, this either means the answer is over, so this won't have an effect or the input is over which means no further match for this letter was found, so we need to skip it and move to the next letter.
+            // Since we're here, this either means the answer is over, so this won't have an effect or the input is over which means no further match for this letter was found, so we need to skip it and move to the next letter.            
             answerSpans.shift();
         }
     }
@@ -110,6 +131,6 @@ function ignoreCases() {
      * @returns .innerText of all elements in listElems combined.
      */
     function constructLetters(listElems) {
-        return Array.from(listElems).map(elem => elem.innerText).join('');
+        return [...listElems].map(elem => elem.innerHTML).join('');
     }
 };

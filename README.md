@@ -53,6 +53,10 @@ Simply makes `{type:}` answers case insensitive.
 
 >As you would think, simply compares your input with the answer without matching case. So ANKI ↔ Anki.
 
+### Does this work in Anki Version 2.x.xx
+
+>I've tested on Anki Version 2.1.48. I would assume it to be working in later versions as well. If not, please open a support ticket above, labeled _Issues_.
+
 ### Why didn't you simply write an add-on for this?
 
 >Addons aren't available for AnkiDroid, also I don't feel like investing considerable time learning how to write Anki Addons for something so small.
