@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+    <title>AnkiIgnoreCase | Simply makes {type:} answers case insensitive.</title>
+    <meta name="generator" content="Jekyll v3.9.3" />
+    <meta property="og:title" content="AnkiIgnoreCase" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="description" content="Simply makes {type:} answers case insensitive." />
+    <meta property="og:description" content="Simply makes {type:} answers case insensitive." />
+    <link rel="canonical" href="https://derdemystifier.github.io/AnkiIgnoreCase/" />
+    <meta property="og:url" content="https://derdemystifier.github.io/AnkiIgnoreCase/" />
+    <meta property="og:site_name" content="AnkiIgnoreCase" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta property="twitter:title" content="AnkiIgnoreCase" />
+    <script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"Simply makes {type:} answers case insensitive.","headline":"AnkiIgnoreCase","name":"AnkiIgnoreCase","url":"https://derdemystifier.github.io/AnkiIgnoreCase/"}</script>
+    <!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/AnkiIgnoreCase/assets/css/style.css?v=3b3c842673242fe2c1c3622f4187a3a87a61a329">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+    <!-- Setup Google Analytics -->
+    <meta name="google-site-verification" content="U2O2wU0NDUVrNoxbY0wX_8dhfDHIC1gqn1Go9ap44w8" />
+
+
+    <!-- You can set your favicon here -->
+    <!-- link rel="shortcut icon" type="image/x-icon" href="/AnkiIgnoreCase/favicon.ico" -->
+
+    <!-- end custom head snippets -->
+
+</head>
+
+<body>
+    <div class="container-lg px-3 my-5 markdown-body">
+
+
+        <h1 align="center" id="div-aligncenterankiignorecasediv">AnkiIgnoreCase</h1>
+        <h2 align="center" id="div-aligncentercase-insensitivity-for-type-fielddiv">Case insensitivity for <code class="language-plaintext highlighter-rouge">{type:}</code> field</h2>
+
+        <p align="center">
+            <img src="https://user-images.githubusercontent.com/124774256/221641621-398786be-3589-491e-84fa-3c605af4e61d.png" />
+        </p>
+
+        <h3 id="div-aligncenter-stylefont-size2emdiv">⏬🔽⏬</h3>
+
+        <p align="center">
+            <img src="https://user-images.githubusercontent.com/124774256/221641707-6180aeac-91a7-47e8-86ee-b009d5c62dc0.png" />
+        </p>
+
+        <p>Simply makes <code class="language-plaintext highlighter-rouge">{type:}</code> answers case insensitive.</p>
+
+        <h2 id="faq">FAQ</h2>
+
+        <h3 id="how-do-i-use-this-in-my-cards">How do I use this in my cards?</h3>
+
+        <blockquote>
+            <p>Simply add this line to the Back Template of your Anki Cards.</p>
+
+            <div class="language-html highlighter-rouge">
+                <div class="highlight">
+                    <pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre>
+                </div>
+            </div>
+        </blockquote>
+
+        <h3 id="i-want-this-to-work-even-when-i-dont-have-internet-access">I want this to work even when I don't have Internet Access.</h3>
+
+        <blockquote>
+            <p>Since the script tag above fetches the script, you need Internet. If that's not always available, then:</p>
+            <ol>
+                <li>Copy the content of the file <a href="https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js"><code class="language-plaintext highlighter-rouge">ignoreCase.min.js</code></a>.</li>
+                <li>Paste it in the Back Template of your Anki card like so:
+                    <div class="language-html highlighter-rouge">
+                        <div class="highlight">
+                            <pre class="highlight"><code><span class="nt">&lt;script&gt;</span>
+<span class="p">(()</span><span class="o">=&gt;</span><span class="p">{</span><span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span><span class="o">!</span><span class="kd">function</span><span class="p">()</span> <span class="p">....</span><span class="nx">etc</span><span class="p">.....</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre>
+                        </div>
+                    </div>
+                </li>
+            </ol>
+        </blockquote>
+
+        <h3 id="what-the-heck-is-the-back-template-of-my-anki-cards">What the Heck is the “Back Template” of my Anki Cards?</h3>
+
+        <blockquote>
+            <p>The Back Template is the other side of the flashcard, it's the code that's rendered when you show the answer.
+                <img src="https://user-images.githubusercontent.com/124774256/221641761-32b6d22f-2508-465a-bf50-c29f90e7df5c.png" alt="" />
+            </p>
+        </blockquote>
+
+        <h3 id="how-do-i-get-to-this-back-template">How do I get to this “Back Template”?</h3>
+
+        <blockquote>
+            <ol>
+                <li>Click <code class="language-plaintext highlighter-rouge">Tools</code> in the Anki Toolbar.</li>
+                <li>Select the Card that has the <code class="language-plaintext highlighter-rouge">{type:}</code> fields.</li>
+                <li>Click <code class="language-plaintext highlighter-rouge">Cards</code> button on the right.</li>
+                <li>TA DAAAAAA!</li>
+            </ol>
+        </blockquote>
+
+        <h3 id="how-does-this-work">How does this work?</h3>
+
+        <blockquote>
+            <p>As you would think, simply compares your input with the answer without matching case. So ANKI ↔ Anki.</p>
+        </blockquote>
+
+        <h3 id="does-this-work-in-anki-version-2xxx">Does this work in Anki Version 2.x.xx</h3>
+
+        <blockquote>
+            <p>I've tested on Anki Version 2.1.48. I would assume it to be working in later versions as well. If not, please open a support ticket above, labeled <em>Issues</em>.</p>
+        </blockquote>
+
+        <h3 id="why-didnt-you-simply-write-an-add-on-for-this">Why didn't you simply write an add-on for this?</h3>
+
+        <blockquote>
+            <p>Addons aren't available for AnkiDroid, also I don't feel like investing considerable time learning how to write Anki Addons for something so small.</p>
+        </blockquote>
+
+
+
+        <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+            This site is open source. <a href="https://github.com/DerDemystifier/AnkiIgnoreCase/edit/master/README.md">Improve this page</a>.
+        </div>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+</body>
+
+</html>
