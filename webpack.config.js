@@ -9,7 +9,7 @@ const config = {
     entry: './src/ignoreCase.js',
     output: {
         filename: "ignoreCase.min.js",
-        path: path.resolve(__dirname),
+        path: path.resolve(__dirname, 'docs'),
     },
     plugins: [
         // Add your plugins here
