@@ -25,7 +25,7 @@ Simply makes `{{type:}}` answers case insensitive.
 
 - #### Automatic install
 
-Simply download and install [the addon](https://ankiweb.net/shared/info/1371444066) on your AnkiDesktop. The changes made by the addon will apply to both AnkiDesktop and AnkiDroid. 
+Simply install [the addon](https://ankiweb.net/shared/info/1371444066) on your AnkiDesktop. The changes made by the addon will apply to both AnkiDesktop and AnkiDroid. 
 
 - #### Manual install
 

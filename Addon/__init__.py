@@ -1,9 +1,12 @@
 
 import os
 import re
+from typing import Any
 
+from anki import hooks
 # import the main window object (mw) from aqt
 from aqt import gui_hooks, mw
+from aqt.utils import showInfo
 
 __version__ = "1.0.0"
 ignoreCase_scriptTag = """<script role='ignoreCase' src="_ignoreCase.min.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js';document.head.appendChild(script);"></script>"""
@@ -27,37 +30,50 @@ def checkAddonUpdate() -> None:
 gui_hooks.profile_did_open.append(checkAddonUpdate)
 
 
-def insertScriptTag() -> None:
+def inspectNoteType(note_type: Any):
+    # Get the card templates for the model
+    card_types = note_type['tmpls']
+
+    updated = False
+    for card_type in card_types:
+        question_template = card_type['qfmt']
+        answer_template = card_type['afmt']
+        if "{{type:" in question_template and ignoreCase_scriptTag not in answer_template:
+            updated = True
+            card_type['afmt'] = addScriptTag(card_type['afmt'])
+        elif "{{type:" not in question_template and ignoreCase_scriptTag in answer_template:
+            updated = True
+            card_type['afmt'] = removeScriptTag(card_type['afmt'])
+
+    if updated:
+        # Update the model in the collection
+        mw.col.models.save(note_type)
+
+
+def inspectAllNoteTypes() -> None:
     # Get the current collection from the main window
-    notes = mw.col.models.all()
+    models = mw.col.models.all()
     # Iterate through each model
-    for note in notes:
-        # Get the card templates for the model
-        cards = note['tmpls']
-
-        updated = False
-        for card in cards:
-            res = check4TypeField(card['afmt'])
-            # updated or res[0] means that if updated is already True, then it will stay True
-            updated, card['afmt'] = updated or res[0], res[1]
-
-        # if updated is True, then the model has been updated
-        if updated:
-            # Update the model in the collection
-            mw.col.models.save(note)
+    for note_type in models:
+        inspectNoteType(note_type)
 
 
 # Call the function to insert the script tag
-gui_hooks.profile_did_open.append(insertScriptTag)
+gui_hooks.profile_did_open.append(inspectAllNoteTypes)
 
 
-def check4TypeField(template: str) -> bool:
-    if "{{type:" in template and ignoreCase_scriptTag not in template:
-        # Using regex, remove old script tag if it exists
-        template = re.sub("<script role='ignoreCase'.+script>", "", template, flags=re.IGNORECASE)
-        template = f"{ignoreCase_scriptTag}\n\n" + template
-        return True, template
-    return False, template
+def addScriptTag(template: str) -> str:
+    # This will remove any version of the script tag that is already in the template
+    template = removeScriptTag(template)
+    template = f"{ignoreCase_scriptTag}\n\n" + template
+    return template
+
+
+def removeScriptTag(template: str) -> str:
+    # Using regex, remove any old script tag if it exists
+    template = re.sub("<script role='ignoreCase'.+script>", "", template, flags=re.IGNORECASE)
+    template = template.strip()
+    return template
 
 
 def setup():
