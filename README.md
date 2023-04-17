@@ -64,7 +64,11 @@ Simply add this line to the Back Template of your Anki Cards.
 
 ### How does this work?
 
->As you would think, simply compares your input with the answer without matching case. So ANKI ↔ Anki.
+>As you would think, simply compares your input with the answer without matching case. So ANKI ↔ Anki. Technically speaking, it injects a script tag to your card templates that have a {{type:}} field. It doesn't touch any existing code in the template. The script enables the addon to work both on AnkiDesktop and AnkiDroid.
+
+### How to uninstall?
+
+>Go to Addons->ignoreCase->Config and change "enabled" with false, then restart Anki. That's it! You can then delete the addon if you wish by hitting the uninstall button.
 
 ### Does this work in Anki Version 2.x.xx
 

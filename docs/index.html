@@ -85,7 +85,7 @@
         <h3 id="i-want-this-to-work-even-when-i-dont-have-internet-access">I want this to work even when I don't have Internet Access.</h3>
 
         <blockquote>
-            <p>Since the script tag above fetches the script, you need Internet. If that's not always available, then:</p>
+            <p>If you install the addon. This will apply even when you don't have Internet access. But it won't if you chose manual install; Since the script tag above fetches the script, you need Internet. If that's not always available, then:</p>
             <ol>
                 <li>Copy the content of the file <a href="https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js"><code class="language-plaintext highlighter-rouge">ignoreCase.min.js</code></a>.</li>
                 <li>Paste it in the Back Template of your Anki card like so:
@@ -123,7 +123,13 @@
         <h3 id="how-does-this-work">How does this work?</h3>
 
         <blockquote>
-            <p>As you would think, simply compares your input with the answer without matching case. So ANKI ↔ Anki.</p>
+            <p>As you would think, simply compares your input with the answer without matching case. So ANKI ↔ Anki. Technically speaking, it injects a script tag to your card templates that have a {{type:}} field. It doesn't touch any existing code in the template. The script enables the addon to work both on AnkiDesktop and AnkiDroid.</p>
+        </blockquote>
+
+        <h3 id="does-this-work-in-anki-version-2xxx">How to uninstall?</h3>
+
+        <blockquote>
+            <p>Go to Addons->ignoreCase->Config and change "enabled" with false, then restart Anki. That's it! You can then delete the addon if you wish by hitting the uninstall button.</p>
         </blockquote>
 
         <h3 id="does-this-work-in-anki-version-2xxx">Does this work in Anki Version 2.x.xx</h3>
