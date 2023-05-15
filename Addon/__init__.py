@@ -1,6 +1,7 @@
 
 import os
 import re
+import shutil
 from typing import Any
 
 from anki import hooks
@@ -8,18 +9,31 @@ from anki import hooks
 from aqt import gui_hooks, mw
 from aqt.utils import showInfo
 
+from .utils import addScriptTag, delete_all_deps, removeScriptTag
+
+
 __version__ = "1.0.0"
-ignoreCase_scriptTag = """<script role='ignoreCase' src="_ignoreCase.min.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js';document.head.appendChild(script);"></script>"""
+
+ignoreCase_scriptTag = f"""<script role='ignoreCase' src="_ignoreCase.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js';document.head.appendChild(script);"></script>"""
+
 addon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
+
+
 # Get the config object for your addon
 config = mw.addonManager.getConfig(__name__)
+
+media_collection_dir = None
 
 
 # Check if the addon has been updated
 def checkAddonUpdate() -> None:
+    global media_collection_dir
+
+    media_collection_dir = mw.col.media.dir()
     # Opening JSON file
     if (not config.get('enabled')):
         inspectAllNoteTypes("uninstall")
+        delete_all_deps(media_collection_dir, "_ignoreCase")
         return
 
     if not os.path.exists(os.path.join(addon_path, "VERSION")):
@@ -50,7 +64,7 @@ def inspectNoteType(note_type: Any, intent: str):
             card_type['afmt'] = removeScriptTag(card_type['afmt'])
         elif "{{type:" in question_template and ignoreCase_scriptTag not in answer_template:
             updated = True
-            card_type['afmt'] = addScriptTag(card_type['afmt'])
+            card_type['afmt'] = addScriptTag(card_type['afmt'], ignoreCase_scriptTag)
 
     if updated:
         # Update the model in the collection
@@ -88,26 +102,14 @@ def inspectAllNoteTypes(intent: str = "install") -> None:
 
 # hooks.note_will_flush.append(inspectCurrentNote)
 
-def addScriptTag(template: str) -> str:
-    # This will remove any version of the script tag that is already in the template
-    template = removeScriptTag(template)
-    template = template + "\n "*10 + ignoreCase_scriptTag
-    return template
-
-
-def removeScriptTag(template: str) -> str:
-    # Using regex, remove any old script tag if it exists
-    template = re.sub("<script role='ignoreCase'.+script>", "", template, flags=re.IGNORECASE)
-    template = template.strip()
-    return template
-
 
 def setup():
-    _add_file(os.path.join(addon_path, "_ignoreCase.min.js"), "_ignoreCase.min.js")
+    path = os.path.join(addon_path, "_ignoreCase.min.js")
+    filename = f"_ignoreCase.min{__version__}.js"
 
-
-def uninstall():
-    _add_file(os.path.join(addon_path, "_ignoreCase.min.js"), "_ignoreCase.min.js")
+    # copy file to media folder after deleting all previous versions
+    delete_all_deps(media_collection_dir, "_ignoreCase")
+    shutil.copyfile(path, os.path.join(media_collection_dir, filename))
 
 
 def updateVersion():
@@ -116,16 +118,6 @@ def updateVersion():
     # create the VERSION file
     with open(os.path.join(addon_path, "VERSION"), "w") as f:
         f.write(__version__)
-
-
-def _add_file(path: str, filename: str):
-    if not os.path.isfile(os.path.join(mw.col.media.dir(), filename)):
-        mw.col.media.add_file(path)
-    else:
-        # remove file
-        os.remove(os.path.join(mw.col.media.dir(), filename))
-        # add file
-        mw.col.media.add_file(path)
 
 
 # Call the function to check for addon update
