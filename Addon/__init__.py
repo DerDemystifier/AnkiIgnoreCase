@@ -11,7 +11,7 @@ from .utils import addScriptTag, delete_all_deps, removeScriptTag
 
 __version__ = "1.1.0"
 
-ignoreCase_scriptTag = f"""<script role='ignoreCase' src="_ignoreCase.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase_lt55.min.js';document.head.appendChild(script);"></script>"""
+ignoreCase_scriptTag = f"""<script role='ignoreCase' src="_ignoreCase.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js';document.head.appendChild(script);"></script>"""
 
 addon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
