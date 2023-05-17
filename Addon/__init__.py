@@ -63,6 +63,7 @@ def startupCheck() -> None:
         delete_all_deps(media_collection_dir, "_ignoreCase")
         return
 
+    # Check if either the it's a fresh install or a new version
     if not all((
         os.path.exists(os.path.join(addon_path, "VERSION")),
         os.path.exists(os.path.join(media_collection_dir, f"_ignoreCase.min{__version__}.js"))
