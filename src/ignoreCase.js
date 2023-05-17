@@ -56,6 +56,9 @@ function ignoreCases() {
         // If they're not same, then do a letter-by-letter comparison for the shorter one, if they match (case-less-ly), then light'em up in green.
         let recon_entrySpans = []
         let recon_answerSpans = []
+
+        let full_entry_chars = full_entry.split('');
+
         diff.forEach((part) => {
             // green for additions, red for deletions
             // grey for common parts
@@ -68,7 +71,7 @@ function ignoreCases() {
             if (entry_typeClass == "typeMissed") {
                 entry_span = `<span class="${entry_typeClass}">-</span>`.repeat(part.value.length);
             } else {
-                entry_span = `<span class="${entry_typeClass}">${part.value}</span>`;
+                entry_span = `<span class="${entry_typeClass}">${full_entry_chars.splice(0, part.value.length).join("")}</span>`;
             }
 
             if (answer_typeClass != "typeMissed") {
