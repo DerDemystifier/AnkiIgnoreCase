@@ -3,13 +3,15 @@ import os
 import shutil
 from typing import Any
 
+from anki import hooks
 # import the main window object (mw) from aqt
 from aqt import gui_hooks, mw
+from aqt.utils import showInfo
 
 from .utils import addScriptTag, delete_all_deps, removeScriptTag
 
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 ignoreCase_scriptTag = f"""<script role='ignoreCase' src="_ignoreCase.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js';document.head.appendChild(script);"></script>"""
 
@@ -20,34 +22,6 @@ addon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 config = mw.addonManager.getConfig(__name__)
 
 media_collection_dir = None
-
-
-# Check if the addon has been updated
-def startupCheck() -> None:
-    global media_collection_dir
-
-    media_collection_dir = mw.col.media.dir()
-    # Opening JSON config
-    if (not config.get('enabled')):
-        inspectAllNoteTypes("uninstall")
-        delete_all_deps(media_collection_dir, "_ignoreCase")
-        return
-
-    if not all((
-        os.path.exists(os.path.join(addon_path, "VERSION")),
-        os.path.exists(os.path.join(media_collection_dir, f"_ignoreCase.min{__version__}.js"))
-    )):
-        updateVersion()
-    else:
-        # read the VERSION file
-        with open(os.path.join(addon_path, "VERSION"), "r") as f:
-            version = f.read()
-            # if the version in the file is different from the current version
-            if version != __version__:
-                updateVersion()
-
-    # Call the function to insert the script tag
-    inspectAllNoteTypes()
 
 
 def inspectNoteType(note_type: Any, intent: str):
@@ -79,42 +53,34 @@ def inspectAllNoteTypes(intent: str = "install") -> None:
         inspectNoteType(note_type, intent)
 
 
-# def inspectCurrentNote(model: Any):
-#     note_type = mw.col.models.byName(model.note_type()['name'])
-#     # Get the card templates for the model
-#     card_types = note_type['tmpls']
+def startupCheck() -> None:
+    global media_collection_dir
 
-#     updated = False
-#     for card_type in card_types:
-#         question_template = card_type['qfmt']
-#         answer_template = card_type['afmt']
-#         if "{{type:" in question_template and ignoreCase_scriptTag not in answer_template:
-#             updated = True
-#             card_type['afmt'] = addScriptTag(card_type['afmt'])
-#         elif "{{type:" not in question_template and ignoreCase_scriptTag in answer_template:
-#             updated = True
-#             card_type['afmt'] = removeScriptTag(card_type['afmt'])
+    media_collection_dir = mw.col.media.dir()
+    # Opening JSON config
+    if (not config.get('enabled')):
+        inspectAllNoteTypes("uninstall")
+        delete_all_deps(media_collection_dir, "_ignoreCase")
+        return
 
-#     if updated:
-#         # Update the model in the collection
-#         mw.col.models.save(note_type)
+    if not all((
+        os.path.exists(os.path.join(addon_path, "VERSION")),
+        os.path.exists(os.path.join(media_collection_dir, f"_ignoreCase.min{__version__}.js"))
+    )):
+        setupAddon()
 
-
-# hooks.note_will_flush.append(inspectCurrentNote)
+    # Call the function to insert the script tag
+    inspectAllNoteTypes()
 
 
-def setupMediaFolder():
-    path = os.path.join(addon_path, "_ignoreCase.min.js")
-    filename = f"_ignoreCase.min{__version__}.js"
-
+def setupAddon():
+    # setup Media Folder
+    path_js = os.path.join(addon_path, "_ignoreCase.min.js")
+    filename_save = f"_ignoreCase.min{__version__}.js"
     # copy file to media folder after deleting all previous versions
     delete_all_deps(media_collection_dir, "_ignoreCase")
-    shutil.copyfile(path, os.path.join(media_collection_dir, filename))
+    shutil.copyfile(path_js, os.path.join(media_collection_dir, filename_save))
 
-
-def updateVersion():
-    # run the setup function
-    setupMediaFolder()
     # create or replace the VERSION file
     with open(os.path.join(addon_path, "VERSION"), "w") as f:
         f.write(__version__)
