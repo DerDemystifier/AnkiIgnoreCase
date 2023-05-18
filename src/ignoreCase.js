@@ -33,7 +33,7 @@ function ignoreCases() {
 
     const comparison_area = document.querySelector(typeAreaSelector);
 
-    const full_entry = constructLetters(entrySpans).replace(/-/g, '');
+    const full_entry = constructLetters(entrySpans).replace(/-/g, '').normalize("NFD").replace(/[\u0300-\u036f]/g, '');
     const full_answer = constructLetters(answerSpans);
 
 
