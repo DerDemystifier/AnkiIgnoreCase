@@ -1,0 +1,3 @@
+[submodule "jsdiff"]
+	path = jsdiff
+	url = https://github.com/kpdecker/jsdiff
