@@ -37,13 +37,13 @@ function ignoreCases() {
     const full_answer = constructLetters(answerSpans);
     const full_answer_raw = full_answer.normalize("NFD").replace(/[\u0300-\u036f]/g, '').replace(/\&nbsp;/g, '');
 
-
     const diff = diffChars(full_entry, full_answer_raw, { ignoreCase: true });
 
     // diff.length == 1 means that the input is exactly the same as the answer, only case different.
     if (diff.length == 1) {
         // In this case, remove the entry and ↓ and leave the answer marked green!
         // this code needs to be adapted to fix the accent
+        // Need an array of spans where the innerHTML is normalized and the accents have been filtered out.
         answerSpans.forEach(span => span.setAttribute("class", "typeGood"));
         comparison_area.innerHTML = answerSpans.map(elem => elem.outerHTML).join('');
     } else {
