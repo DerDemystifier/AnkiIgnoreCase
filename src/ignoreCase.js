@@ -43,6 +43,7 @@ function ignoreCases() {
     // diff.length == 1 means that the input is exactly the same as the answer, only case different.
     if (diff.length == 1) {
         // In this case, remove the entry and ↓ and leave the answer marked green!
+        // this code needs to be adapted to fix the accent
         answerSpans.forEach(span => span.setAttribute("class", "typeGood"));
         comparison_area.innerHTML = answerSpans.map(elem => elem.outerHTML).join('');
     } else {

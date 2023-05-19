@@ -1,0 +1,19 @@
+{
+  "name": "ankiignoreaccent",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\"> \tAnkiIgnoreAccent </h1> <h2 align=\"center\"> \tAccent insensitivity for <code>{{type:}}</code> field </h2>",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "webpack": "^5.83.1",
+    "webpack-cli": "^5.1.1"
+  },
+  "dependencies": {
+    "diff": "^5.1.0"
+  }
+}
