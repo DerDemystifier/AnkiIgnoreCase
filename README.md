@@ -6,3 +6,5 @@
 </h2>
 
 Gratefully forked from https://derdemystifier.github.io/AnkiIgnoreCase/
+
+Use webpack: https://webpack.js.org/guides/getting-started/
