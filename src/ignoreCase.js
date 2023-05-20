@@ -42,10 +42,9 @@ function ignoreCases() {
     // diff.length == 1 means that the input is exactly the same as the answer, only case different.
     if (diff.length == 1) {
         // In this case, remove the entry and ↓ and leave the answer marked green!
-        // this code needs to be adapted to fix the accent
-        // Need an array of spans where the innerHTML is normalized and the accents have been filtered out.
-        answerSpans.forEach(span => span.setAttribute("class", "typeGood"));
-        comparison_area.innerHTML = answerSpans.map(elem => elem.outerHTML).join('');
+        // The entry is used rather than the answer in order to not print the accent
+        entrySpans.forEach(span => span.setAttribute("class", "typeGood"));
+        comparison_area.innerHTML = entrySpans.map(elem => elem.outerHTML).join('');
     } else {
         // If they're not same, then reconstruct the entry and answer spans with the new classes based on the diff.
 
