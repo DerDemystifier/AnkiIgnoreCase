@@ -1,4 +1,3 @@
-
 import os
 import shutil
 from typing import Any
@@ -11,7 +10,7 @@ from aqt.utils import showInfo
 from .utils import addScriptTag, delete_all_deps, removeScriptTag
 
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"
 
 ignoreCase_scriptTag = f"""<script role='ignoreCase' src="_ignoreCase.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js';document.head.appendChild(script);"></script>"""
 

@@ -14,11 +14,14 @@ ignoreCases();
  * There are 3 different classes availabe post-comparison : 
  * <span class="typeGood"></span>   - green, means the this part matches the correct answer letter for letter.
  * <span class="typeBad"></span>    - red, means you've typed it wrong, typed 'a' when it should be 'c'.
- * <span class="typeMissed"></span> - yellow/gray, means you forgot a letter.
+ * <span class="typeMissed"></span> - gray, means you forgot a letter.
  *
  * In previous versions, I used to use my own algo for comparison, but as it started to get more complex, I decided to use a library for it. Now I use the diffChars() function from the jsdiff library, which uses state of the art algorithms to compare strings. It returns an array of objects, each object has a value and a boolean property called added or removed. If added is true, then the value is an addition, if removed is true, then the value is a deletion. If both are false, then it's a common part.
  */
 function ignoreCases() {
+    // if there's no arrow, that means there's no comparison, which means the user hasn't typed anything or got the correct answer.
+    if(!document.querySelector('span#typearrow')) return;
+
     // Get all span parts of both entry and answer to be destructed    
     const typeAreaSelector = 'code#typeans';
     const typesSpansSelector = typeAreaSelector + ' > span[class^="type"]';
