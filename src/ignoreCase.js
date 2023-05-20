@@ -43,6 +43,7 @@ function ignoreCases() {
     if (diff.length == 1) {
         // In this case, remove the entry and ↓ and leave the answer marked green!
         // The entry is used rather than the answer in order to not print the accent
+        entrySpans = entrySpans.filter(item => !(item.innerHTML == "-"));
         entrySpans.forEach(span => span.setAttribute("class", "typeGood"));
         comparison_area.innerHTML = entrySpans.map(elem => elem.outerHTML).join('');
     } else {
