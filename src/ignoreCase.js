@@ -20,7 +20,7 @@ ignoreCases();
  */
 function ignoreCases() {
     // if there's no arrow, that means there's no comparison, which means the user hasn't typed anything or got the correct answer.
-    if(!document.querySelector('span#typearrow')) return;
+    if (!document.querySelector('span#typearrow')) return;
 
     // Get all span parts of both entry and answer to be destructed    
     const typeAreaSelector = 'code#typeans';

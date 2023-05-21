@@ -41,7 +41,7 @@ Simply add this line to the Back Template of your Anki Cards.
 
 ### I want this to work even when I don't have Internet Access.
 
->If you install the addon. This will apply even when you don't have Internet access. But it won't if you chose manual install; Since the script tag above fetches the script, you will need Internet. If that's not always available, then:
+>If you install the addon. This will apply even when you don't have Internet access. But it won't if you chose manual install; Since the script tag above fetches the script, you will need Internet access. If that's not always available, then:
 >1. Copy the content of the file [`ignoreCase.min.js`](https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js).
 >2. Paste it in the Back Template of your Anki card like so:
 >```html
@@ -49,6 +49,12 @@ Simply add this line to the Back Template of your Anki Cards.
 >(()=>{"use strict";!function() ....etc.....
 ></script>
 >```
+> _↑ OR ↓_
+> 1. Save the content of the file [`ignoreCase.min.js`](https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js) in the `collection.media` folder as `_ignoreCase.min.js`.
+> 2. Paste this HTML tag in the Back Template of your Anki card like so:
+> ```html
+> <script role='ignoreCase' src="_ignoreCase.min.js"></script>
+> ```
 
 ### What the Heck is the "Back Template" of my Anki Cards?
 
@@ -69,7 +75,8 @@ Simply add this line to the Back Template of your Anki Cards.
 ### How to uninstall?
 
 >Go to Addons->ignoreCase->Config and change "enabled" with false, then restart Anki. That's it! You can then delete the addon if you wish by hitting the uninstall button.
+> If you had opted for manual install, then you need to manually uninstalling by retracing the steps. Basically, delete the `<script>` tag from your card(s).
 
 ### Does this work in Anki Version 2.x.xx
 
->I've tested on Anki Version 2.1.48. I would assume it to be working in later versions as well. If not, please open a support ticket above, labelled _Issues_.
+>I've tested on Anki Version 2.1.48 and Version 2.1.63. I would assume it to be working in later versions as well. If not, please open a support ticket above, labelled _Issues_.
