@@ -1,6 +1,6 @@
 {
   "name": "anki-ignore-case",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Case insensitivity for {{type:}} field",
   "mainComment": "index.js",
   "private": true,

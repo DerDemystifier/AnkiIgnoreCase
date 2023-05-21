@@ -11,7 +11,7 @@ from .utils import addScriptTag, delete_all_deps, removeScriptTag
 
 __version__ = "1.1.0"
 
-ignoreCase_scriptTag = f"""<script role='ignoreCase' src="_ignoreCase.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase_lt55.min.js';document.head.appendChild(script);"></script>"""
+ignoreCase_scriptTag = f"""<script role='ignoreCase' src="_ignoreCase_lt55.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase_lt55.min.js';document.head.appendChild(script);"></script>"""
 
 addon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
@@ -63,7 +63,7 @@ def startupCheck() -> None:
 
     if not all((
         os.path.exists(os.path.join(addon_path, "VERSION")),
-        os.path.exists(os.path.join(media_collection_dir, f"_ignoreCase.min{__version__}.js"))
+        os.path.exists(os.path.join(media_collection_dir, f"_ignoreCase_lt55.min{__version__}.js"))
     )):
         setupAddon()
 
@@ -73,8 +73,8 @@ def startupCheck() -> None:
 
 def setupAddon():
     # setup Media Folder
-    path_js = os.path.join(addon_path, "_ignoreCase.min.js")
-    filename_save = f"_ignoreCase.min{__version__}.js"
+    path_js = os.path.join(addon_path, "_ignoreCase_lt55.min.js")
+    filename_save = f"_ignoreCase_lt55.min{__version__}.js"
     # copy file to media folder after deleting all previous versions
     delete_all_deps(media_collection_dir, "_ignoreCase")
     shutil.copyfile(path_js, os.path.join(media_collection_dir, filename_save))

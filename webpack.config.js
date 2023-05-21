@@ -6,9 +6,9 @@ const isProduction = process.env.NODE_ENV == 'production';
 
 
 const config = {
-    entry: './src/ignoreCase.js',
+    entry: './src/ignoreCase_lt55.js',
     output: {
-        filename: "ignoreCase.min.js",
+        filename: "ignoreCase_lt55.min.js",
         path: path.resolve(__dirname, 'docs'),
     },
     plugins: [
