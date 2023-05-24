@@ -24,35 +24,34 @@ function ignoreCases() {
 
     // Get all span parts of both entry and answer to be destructed    
     const typeAreaSelector = 'code#typeans';
-    const typesSpansSelector = typeAreaSelector + ' > span[class^="type"]';
+    const typesSpansSelector = `${typeAreaSelector} > span[class^="type"]`;
     // Selects only answer spans
-    const answerSpansSelector = typeAreaSelector + ' br ~ span[class^="type"]';
+    const answerSpansSelector = `${typeAreaSelector} br ~ span[class^="type"]`;
 
     // Update the spans array after destruction
-    let typesSpans = Array.from(document.querySelectorAll(typesSpansSelector));
-    let answerSpans = Array.from(document.querySelectorAll(answerSpansSelector));
+    const typesSpans = [...document.querySelectorAll(typesSpansSelector)];
+    const answerSpans = [...document.querySelectorAll(answerSpansSelector)];
     // entrySpans contains spans of the entry, which are (All_Spans - Answer_Spans). Sadly, we can't do this using a CSS selector, so we do it JS way
-    let entrySpans = typesSpans.filter(x => !answerSpans.includes(x));
+    const entrySpans = typesSpans.filter(x => !answerSpans.includes(x));
 
     const comparison_area = document.querySelector(typeAreaSelector);
 
     const full_entry = constructLetters(entrySpans).replace(/-/g, '');
     const full_answer = constructLetters(answerSpans);
 
-
     const diff = diffChars(full_entry, full_answer, { ignoreCase: true });
 
-    // diff.length == 1 means that the input is exactly the same as the answer, only case different.
-    if (diff.length == 1) {
+    // diff.length === 1 means that the input is exactly the same as the answer, only case different.
+    if (diff.length === 1) {
         // In this case, remove the entry and ↓ and leave the answer marked green!
-        answerSpans.forEach(span => span.setAttribute("class", "typeGood"));
+        answerSpans.forEach(span => span.setAttribute('class', 'typeGood'));
         comparison_area.innerHTML = answerSpans.map(elem => elem.outerHTML).join('');
     } else {
         // If they're not same, then reconstruct the entry and answer spans with the new classes based on the diff.
 
         // These arrays will contain the new spans with the new classes for entry and answer.
-        let recon_entrySpans = []
-        let recon_answerSpans = []
+        let recon_entrySpans = [];
+        let recon_answerSpans = [];
 
         // We want to keep track of the original entry, so we can use it in display since diffChars ignores case and normalizes case diffs.
         let full_entry_chars = full_entry.split('');
@@ -64,15 +63,15 @@ function ignoreCases() {
 
             let entry_span, answer_span;
 
-            if (entry_typeClass == "typeMissed") {
+            if (entry_typeClass === 'typeMissed') {
                 entry_span = `<span class="typeMissed">-</span>`.repeat(part.value.length);
             } else {
                 // We want to consume the original entry array in display, so we splice it based on how many chars to consume.
-                entry_span = `<span class="${entry_typeClass}">${full_entry_chars.splice(0, part.value.length).join("")}</span>`;
+                entry_span = `<span class="${entry_typeClass}">${full_entry_chars.splice(0, part.value.length).join('')}</span>`;
             }
 
             // answer doesn't show - for missed chars, so we don't need to do anything special.
-            if (answer_typeClass != "typeMissed") {
+            if (answer_typeClass !== 'typeMissed') {
                 answer_span = `<span class="${answer_typeClass}">${part.value}</span>`;
             }
 
@@ -81,9 +80,8 @@ function ignoreCases() {
         });
 
         // Finally display the new spans in the comparison area.
-        comparison_area.innerHTML = `${recon_entrySpans.join("")}<br><span id="typearrow">⇩</span><br>${recon_answerSpans.join("")}`;
+        comparison_area.innerHTML = `${recon_entrySpans.join('')}<br><span id="typearrow">⇩</span><br>${recon_answerSpans.join('')}`;
     }
-
 
     /**
      * Takes an element and destructs its text into separate elements.
@@ -112,4 +110,6 @@ function ignoreCases() {
     function constructLetters(listElems) {
         return [...listElems].map(elem => elem.innerHTML).join('');
     }
-};
+}
+
+export default ignoreCases;
