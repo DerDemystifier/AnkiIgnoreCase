@@ -1,8 +1,10 @@
 "use strict";
 
 import { diffChars } from "diff";
+// const { diffChars } = require("diff");
 
-ignoreCases();
+
+// ignoreCases();
 
 
 /**
@@ -112,4 +114,5 @@ function ignoreCases() {
     }
 }
 
-export default ignoreCases;
+// module.exports = { ignoreCases };
+export { ignoreCases };
