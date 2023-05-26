@@ -78,6 +78,11 @@ function ignoreCase() {
             recon_answerSpans.push(answer_span);
         });
 
+        // trims added - at the end of entry spans, since answer doesn't show - for missed chars.
+        if (recon_entrySpans.length > 0 && recon_entrySpans[recon_entrySpans.length - 1].includes("typeMissed")) {
+            recon_entrySpans.pop();
+        }
+
         // Finally display the new spans in the comparison area.
         comparison_area.innerHTML = `${recon_entrySpans.join('')}<br><span id="typearrow">⇩</span><br>${recon_answerSpans.join('')}`;
     }

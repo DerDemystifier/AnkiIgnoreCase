@@ -1,7 +1,7 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
 const path = require('path');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 
 const isProduction = process.env.NODE_ENV == 'production';
 
@@ -13,10 +13,14 @@ const config = {
         path: path.resolve(__dirname, 'docs'),
     },
     plugins: [
-        new CopyWebpackPlugin({
-            patterns: [
-                { from: 'docs/ignoreCase.min.js', to: '../addon/_ignoreCase.min.js' }
-            ]
+        new FileManagerPlugin({
+            events: {
+                onEnd: {
+                    copy: [
+                        { source: 'docs/ignoreCase.min.js', destination: 'addon/_ignoreCase.min.js' }
+                    ]
+                }
+            }
         })
     ],
     module: {

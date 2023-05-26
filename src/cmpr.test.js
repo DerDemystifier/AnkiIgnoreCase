@@ -16,11 +16,8 @@ describe('ignoreCases_function', () => {
         ignoreCase();
 
         // Verify
-        const answerSpans = document.querySelectorAll('code#typeans > span');
-        answerSpans.forEach(span => {
-            expect(document.body.innerHTML).toEqual(
-                /*html*/`<code id="typeans"><span class="typeGood">aBc</span><span class="typeMissed">-</span><span class="typeGood">de</span><br><span id="typearrow">⇩</span><br><span class="typeGood">abc</span><span class="typeBad">c</span><span class="typeGood">de</span></code>`);
-        });
+        expect(document.body.innerHTML).toEqual(
+            /*html*/`<code id="typeans"><span class="typeGood">aBc</span><span class="typeMissed">-</span><span class="typeGood">de</span><br><span id="typearrow">⇩</span><br><span class="typeGood">abc</span><span class="typeBad">c</span><span class="typeGood">de</span></code>`);
     });
 
 
@@ -28,7 +25,7 @@ describe('ignoreCases_function', () => {
         // Setup
         document.body.innerHTML =
         /*html*/`<code id="typeans">
-                    <span class="typeGood">Reykjav</span><span class="typeBad">ic</span>
+                    <span class="typeGood">Ykjav</span><span class="typeBad">ic</span>
                     <br /><span id="typearrow">↓</span><br />
                     <span class="typeGood">Reykjav</span><span class="typeMissed">ík</span>
                 </code>`;
@@ -37,9 +34,6 @@ describe('ignoreCases_function', () => {
         ignoreCase();
 
         // Verify
-        const answerSpans = document.querySelectorAll('code#typeans > span');
-        answerSpans.forEach(span => {
-            expect(span.classList.contains('typeGood')).toEqual(/*html*/`<code id="typeans"><span class="typeGood">ReYkjav</span><span class="typeBad">ic</span><br><span id="typearrow">⇩</span><br><span class="typeGood">Reykjav</span><span class="typeBad">ík</span></code>`);
-        });
+        expect(document.body.innerHTML).toEqual(/*html*/`<code id="typeans"><span class="typeMissed">-</span><span class="typeMissed">-</span><span class="typeGood">Ykjav</span><span class="typeBad">ic</span><br><span id="typearrow">⇩</span><br><span class="typeBad">Re</span><span class="typeGood">ykjav</span><span class="typeBad">ík</span></code>`);
     });
 })
