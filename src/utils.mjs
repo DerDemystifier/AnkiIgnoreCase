@@ -60,14 +60,17 @@ function ignoreCase() {
             const entry_typeClass = part.added ? 'typeMissed' : part.removed ? 'typeBad' : 'typeGood';
             const answer_typeClass = part.added ? 'typeBad' : part.removed ? 'typeMissed' : 'typeGood';
 
-            let entry_span, answer_span;
+            let entry_span = '', answer_span = ''
 
             if (entry_typeClass === 'typeMissed') {
-                entry_span = `<span class="typeMissed">-</span>`.repeat(part.value.length);
+                if (!last_item_includes(recon_entrySpans, "typeBad"))
+                    // Only add typeMissed if last item is not typeBad, to match better with answerSpans.
+                    entry_span = `<span class="typeMissed">-</span>`.repeat(part.value.length);
             } else {
                 // We want to consume the original entry array in display, so we splice it based on how many chars to consume.
                 entry_span = `<span class="${entry_typeClass}">${full_entry_chars.splice(0, part.value.length).join('')}</span>`;
             }
+
 
             // answer doesn't show - for missed chars, so we don't need to do anything special.
             if (answer_typeClass !== 'typeMissed') {
@@ -78,14 +81,20 @@ function ignoreCase() {
             recon_answerSpans.push(answer_span);
         });
 
-        // trims added - at the end of entry spans, since answer doesn't show - for missed chars.
-        if (recon_entrySpans.length > 0 && recon_entrySpans[recon_entrySpans.length - 1].includes("typeMissed")) {
-            recon_entrySpans.pop();
-        }
-
         // Finally display the new spans in the comparison area.
         comparison_area.innerHTML = `${recon_entrySpans.join('')}<br><span id="typearrow">⇩</span><br>${recon_answerSpans.join('')}`;
     }
+}
+
+/**
+ * Checks if the last item of the array includes the string.
+ * @param {Array<string>} arr_of_strings The array of strings to check the last item of.
+ * @param {string} str The string to check if it's included in the last item of the array.
+ * @returns {boolean} true if the last item of the array includes the string, false otherwise.
+ */
+function last_item_includes(arr_of_strings, str) {
+    // console.log('arr_of_strings :>> ', arr_of_strings);
+    return arr_of_strings.length > 0 && arr_of_strings[arr_of_strings.length - 1].includes(str);
 }
 
 /**

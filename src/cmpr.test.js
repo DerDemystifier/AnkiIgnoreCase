@@ -21,19 +21,33 @@ describe('ignoreCases_function', () => {
     });
 
 
-    it("trims added -- at the end of entry", () => {
+    it("doesn't add - in entrySpans directly after typeBad", () => { // because it's ommited from answer too
         // Setup
         document.body.innerHTML =
-        /*html*/`<code id="typeans">
-                    <span class="typeGood">Ykjav</span><span class="typeBad">ic</span>
-                    <br /><span id="typearrow">↓</span><br />
-                    <span class="typeGood">Reykjav</span><span class="typeMissed">ík</span>
-                </code>`;
+        /*html*/`<code id="typeans"><span class="typeMissed">--</span><span class="typeGood">ykjav</span><span class="typeBad">i</span><span class="typeGood">k</span>
+                    <br><span id="typearrow">↓</span><br>
+                    <span class="typeMissed">Re</span><span class="typeGood">ykjav</span><span class="typeMissed">í</span><span class="typeGood">k</span></code>`;
 
         // Exercise
         ignoreCase();
 
         // Verify
-        expect(document.body.innerHTML).toEqual(/*html*/`<code id="typeans"><span class="typeMissed">-</span><span class="typeMissed">-</span><span class="typeGood">Ykjav</span><span class="typeBad">ic</span><br><span id="typearrow">⇩</span><br><span class="typeBad">Re</span><span class="typeGood">ykjav</span><span class="typeBad">ík</span></code>`);
+        expect(document.body.innerHTML).toEqual(
+            /*html*/`<code id="typeans"><span class="typeMissed">-</span><span class="typeMissed">-</span><span class="typeGood">ykjav</span><span class="typeBad">i</span><span class="typeGood">k</span><br><span id="typearrow">⇩</span><br><span class="typeBad">Re</span><span class="typeGood">ykjav</span><span class="typeBad">í</span><span class="typeGood">k</span></code>`);
+    });
+
+    it("doesn't add - in entrySpans, ONLY directly after typeBad", () => {
+        // Setup
+        document.body.innerHTML =
+        /*html*/`<code id="typeans"><span class="typeGood">Indi</span><span class="typeMissed">-</span>
+                    <br><span id="typearrow">↓</span><br>
+                    <span class="typeGood">Indi</span><span class="typeBad">-</span>`;
+
+        // Exercise
+        ignoreCase();
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            /*html*/`<code id="typeans"><span class="typeGood">Indi</span><span class="typeMissed">-</span><br><span id="typearrow">⇩</span><br><span class="typeGood">Indi</span><span class="typeBad">-</span></code>`);
     });
 })
