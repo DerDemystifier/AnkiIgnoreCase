@@ -17,7 +17,7 @@ const config = {
             events: {
                 onEnd: {
                     copy: [
-                        { source: 'docs/ignoreCase.min.js', destination: 'addon/_ignoreCase.min.js' }
+                        { source: 'docs/ignoreCase.min.js', destination: 'addon_files/_ignoreCase.min.js' }
                     ]
                 }
             }

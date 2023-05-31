@@ -94,7 +94,7 @@ function ignoreCase() {
  */
 function last_item_includes(arr_of_strings, str) {
     // console.log('arr_of_strings :>> ', arr_of_strings);
-    return arr_of_strings.length > 0 && arr_of_strings[arr_of_strings.length - 1].includes(str);
+    return arr_of_strings.length > 0 && arr_of_strings.at(-1).includes(str);
 }
 
 /**
