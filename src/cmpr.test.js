@@ -41,7 +41,8 @@ describe('ignoreCases_function', () => {
         document.body.innerHTML =
         /*html*/`<code id="typeans"><span class="typeGood">Indi</span><span class="typeMissed">-</span>
                     <br><span id="typearrow">↓</span><br>
-                    <span class="typeGood">Indi</span><span class="typeBad">-</span>`;
+                    <span class="typeGood">Indi</span><span class="typeBad">-</span>
+                </code>`;
 
         // Exercise
         ignoreCase();
@@ -49,5 +50,26 @@ describe('ignoreCases_function', () => {
         // Verify
         expect(document.body.innerHTML).toEqual(
             /*html*/`<code id="typeans"><span class="typeGood">Indi</span><span class="typeMissed">-</span><br><span id="typearrow">⇩</span><br><span class="typeGood">Indi</span><span class="typeBad">-</span></code>`);
+    });
+
+    it("marks hyphens - as errors",  () => {
+        // Setup
+        document.body.innerHTML =
+        /*html*/`<code id="typeans">
+        <span class="typeBad">A</span><span class="typeGood">-bc</span>
+        <br><span id="typearrow">↓</span><br>
+        <span class="typeMissed">a</span><span class="typeGood">-bc</span>
+        </code>`;
+
+        // Exercise
+        ignoreCase();
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            /*html*/`<code id="typeans">
+            <span class="typeGood">A-bc</span>
+            <br><span id="typearrow">⇩</span><br>
+            <span class="typeGood">a-bc</span>
+            </code>`);
     });
 })
