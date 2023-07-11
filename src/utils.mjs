@@ -31,12 +31,15 @@ function ignoreCase() {
     const typesSpans = [...document.querySelectorAll(typesSpansSelector)];
     const answerSpans = [...document.querySelectorAll(answerSpansSelector)];
     // entrySpans contains spans of the entry, which are (All_Spans - Answer_Spans). Sadly, we can't do this using a CSS selector, so we do it JS way
-    const entrySpans = typesSpans.filter(x => !answerSpans.includes(x));
+    const entrySpans = typesSpans.filter(x => !answerSpans.includes(x) && !x.classList.contains('typeMissed'));
 
     const comparison_area = document.querySelector(typeAreaSelector);
 
-    const full_entry = constructLetters(entrySpans).replace(/-/g, '');
+    const full_entry = constructLetters(entrySpans);
     const full_answer = constructLetters(answerSpans);
+
+    console.log('full_entry :>> ', full_entry);
+    console.log('full_answer :>> ', full_answer);
 
     const diff = diffChars(full_entry, full_answer, { ignoreCase: true });
 
