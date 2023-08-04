@@ -38,6 +38,12 @@ describe('ignoreCases_function', () => {
     });
 
     it("doesn't add - in entrySpans, ONLY directly after typeBad", () => {
+        /**
+         * User types: Indi
+         * Answer is:  Indi-
+         * Expected result: Missing letter is marked, but no - is added to entrySpan
+         */
+
         // Setup
         document.body.innerHTML =
         /*html*/`<code id="typeans">
@@ -55,6 +61,11 @@ describe('ignoreCases_function', () => {
     });
 
     it("recognizes user-typed hyphens", () => {
+        /**
+         * User types: A-bc
+         * Answer is:  a-bc
+         * Expected result: a-bc (all green)
+         */
         // Setup
         document.body.innerHTML =
         /*html*/`<code id="typeans">
