@@ -6,7 +6,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "jest --env=jsdom",
+    "tests": "jest --env=jsdom",
     "watch": "webpack --mode=development --watch",
     "build": "webpack --mode=production --node-env=production",
     "build:dev": "webpack --mode=development",
