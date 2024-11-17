@@ -10,7 +10,7 @@ import { diffChars } from 'diff';
  * ↓
  * Marrakesh
  * Will be marked all green. So how do we go about doing this ?
- * There are 3 different classes availabe post-comparison : 
+ * There are 3 different classes availabe post-comparison :
  * <span class="typeGood"></span>   - green, means the this part matches the correct answer letter for letter.
  * <span class="typeBad"></span>    - red, means you've typed it wrong, typed 'a' when it should be 'c'.
  * <span class="typeMissed"></span> - gray, means you forgot a letter.
@@ -21,7 +21,7 @@ function ignoreCase() {
     // if there's no arrow, that means there's no comparison, which means the user hasn't typed anything or got the correct answer.
     if (!document.querySelector('span#typearrow')) return;
 
-    // Get all span parts of both entry and answer to be destructed    
+    // Get all span parts of both entry and answer to be destructed
     const typeAreaSelector = 'code#typeans';
     const typesSpansSelector = `${typeAreaSelector} > span[class^="type"]`;
     // Selects only answer spans
@@ -122,7 +122,7 @@ function destructLetters(elem) {
  * @returns .innerText of all elements in listElems combined.
  */
 function constructLetters(listElems) {
-    return [...listElems].map(elem => elem.innerHTML).join('');
+    return [...listElems].map(elem => elem.innerHTML).join('').trim();
 }
 
 
