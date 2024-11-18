@@ -22,6 +22,8 @@ if mw and mw.addonManager:
     config = mw.addonManager.getConfig(__name__)
 
 media_collection_dir = None
+if mw and mw.col:
+    media_collection_dir = mw.col.media.dir()
 
 
 def inspectNoteType(note_type: Any, intent: str):
@@ -88,13 +90,7 @@ def startupCheck() -> None:
         return
 
     global media_collection_dir
-
     media_collection_dir = mw.col.media.dir()
-    # Opening JSON config
-    if not config.get("enabled"):
-        inspectAllNoteTypes("uninstall")
-        delete_all_deps(media_collection_dir, "_ignoreCase")
-        return
 
     # Check if either the it's a fresh install or a new version
     if not all(
@@ -109,3 +105,12 @@ def startupCheck() -> None:
 
     # Call the function to insert the script tag
     inspectAllNoteTypes()
+
+@gui_hooks.addons_dialog_will_delete_addons.append
+def on_addons_dialog_will_delete_addons(dialog: AddonsDialog, addon_ids: list[str]) -> None:
+    if not mw or not mw.col or not media_collection_dir:
+        raise Exception("AnkiIgnoreCase: An error occurred while uninstalling the addon.")
+
+    if __name__ in addon_ids:
+        inspectAllNoteTypes("uninstall")
+        delete_all_deps(media_collection_dir, "_ignoreCase")
