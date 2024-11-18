@@ -1,5 +1,6 @@
 import os
 import shutil
+import re  # Added import for regex
 from typing import Any
 from aqt import gui_hooks, mw
 import aqt
@@ -29,6 +30,7 @@ if mw and mw.col:
 def inspectNoteType(note_type: Any, intent: str):
     # Get the card templates for the model
     card_types = note_type["tmpls"]
+    type_pattern = re.compile(r"{{.*type:.+}}", flags=re.IGNORECASE)
 
     if not mw or not mw.col:
         return
@@ -39,14 +41,15 @@ def inspectNoteType(note_type: Any, intent: str):
         answer_template = card_type["afmt"]
         # if there's no type field anymore or the user wants to uninstall it
         if (
-            "{{type:" not in question_template
-            and ignoreCase_scriptTag in answer_template
+            ignoreCase_scriptTag in answer_template
+            and not type_pattern.search(question_template) # or answer_template, no matter
         ) or intent == "uninstall":
             updated = True
             card_type["afmt"] = removeScriptTag(card_type["afmt"])
         elif (
-            "{{type:" in question_template
-            and ignoreCase_scriptTag not in answer_template
+            # Otherwise, if the type field is present but the script tag is not in the answer template
+            ignoreCase_scriptTag not in answer_template
+            and type_pattern.search(question_template) # or answer_template, no matter
         ):
             updated = True
             card_type["afmt"] = addScriptTag(card_type["afmt"], ignoreCase_scriptTag)
@@ -106,10 +109,15 @@ def startupCheck() -> None:
     # Call the function to insert the script tag
     inspectAllNoteTypes()
 
+
 @gui_hooks.addons_dialog_will_delete_addons.append
-def on_addons_dialog_will_delete_addons(dialog: AddonsDialog, addon_ids: list[str]) -> None:
+def on_addons_dialog_will_delete_addons(
+    dialog: AddonsDialog, addon_ids: list[str]
+) -> None:
     if not mw or not mw.col or not media_collection_dir:
-        raise Exception("AnkiIgnoreCase: An error occurred while uninstalling the addon.")
+        raise Exception(
+            "AnkiIgnoreCase: An error occurred while uninstalling the addon."
+        )
 
     if __name__ in addon_ids:
         inspectAllNoteTypes("uninstall")
