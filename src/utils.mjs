@@ -1,8 +1,8 @@
-"use strict";
+'use strict';
 
 import { diffChars } from 'diff';
 
-
+const addon_config = window.addon_config;
 
 /**
  * Makes comparison case insensitive. For example :
@@ -31,20 +31,30 @@ function ignoreCase() {
     const typesSpans = [...document.querySelectorAll(typesSpansSelector)];
     const answerSpans = [...document.querySelectorAll(answerSpansSelector)];
     // entrySpans contains spans of the entry, which are (All_Spans - Answer_Spans). It also excludes typeMissed spans from Anki comparison to keep raw user input.
-    const entrySpans = typesSpans.filter(x => !answerSpans.includes(x) && !x.classList.contains('typeMissed'));
+    const entrySpans = typesSpans.filter((x) => !answerSpans.includes(x) && !x.classList.contains('typeMissed'));
 
     const comparison_area = document.querySelector(typeAreaSelector);
 
     const full_entry = constructLetters(entrySpans);
     const full_answer = constructLetters(answerSpans);
 
-    const diff = diffChars(full_entry, full_answer, { ignoreCase: true });
+    let diff = diffChars(full_entry, full_answer, { ignoreCase: true });
+
+    let normalized_entry = null;
+    let normalized_answer = null;
+    if (addon_config.ignore_accents) {
+        // Remove accents from both entry and answer.
+        normalized_entry = full_entry.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        normalized_answer = full_answer.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+        diff = diffChars(normalized_entry, normalized_answer, { ignoreCase: true });
+    }
 
     // diff.length === 1 means that the input is exactly the same as the answer, only case different.
     if (diff.length === 1) {
         // In this case, remove the entry and ↓ and leave the answer marked green!
-        answerSpans.forEach(span => span.setAttribute('class', 'typeGood'));
-        comparison_area.innerHTML = answerSpans.map(elem => elem.outerHTML).join('');
+        answerSpans.forEach((span) => span.setAttribute('class', 'typeGood'));
+        comparison_area.innerHTML = answerSpans.map((elem) => elem.outerHTML).join('');
     } else {
         // If they're not same, then reconstruct the entry and answer spans with the new classes based on the diff.
 
@@ -55,15 +65,22 @@ function ignoreCase() {
         // We want to keep track of the original entry, so we can use it in display since diffChars ignores case and normalizes case diffs.
         let full_entry_chars = full_entry.split('');
 
+        /**
+         * This variable keeps track of the length of processed parts so far in the answer, so we can use it to slice the original answer and get the non-normalized part.
+         * @type {number}
+         */
+        let processed_answer_parts_len = 0;
+
         diff.forEach((part) => {
             // entry and answer spans have different coloring, so we need to use different classes for each.
             const entry_typeClass = part.added ? 'typeMissed' : part.removed ? 'typeBad' : 'typeGood';
             const answer_typeClass = part.added ? 'typeBad' : part.removed ? 'typeMissed' : 'typeGood';
 
-            let entry_span = '', answer_span = ''
+            let entry_span = '',
+                answer_span = '';
 
             if (entry_typeClass === 'typeMissed') {
-                if (!last_item_includes(recon_entrySpans, "typeBad"))
+                if (!last_item_includes(recon_entrySpans, 'typeBad'))
                     // Only add typeMissed if last item is not typeBad, to match better with answerSpans.
                     entry_span = `<span class="typeMissed">-</span>`.repeat(part.value.length);
             } else {
@@ -71,10 +88,20 @@ function ignoreCase() {
                 entry_span = `<span class="${entry_typeClass}">${full_entry_chars.splice(0, part.value.length).join('')}</span>`;
             }
 
+            // If the part is removed, this means it was found in entry but not in answer
+            if (!part.removed) {
+                // answer doesn't show '-' for missed chars, so we don't need to do anything special in answer for cases where entry has a char that answer doesn't.
 
-            // answer doesn't show - for missed chars, so we don't need to do anything special.
-            if (answer_typeClass !== 'typeMissed') {
-                answer_span = `<span class="${answer_typeClass}">${part.value}</span>`;
+                if (addon_config.ignore_accents) {
+                    // slice this part from the original answer to get the non-normalized part.
+                    let non_normalized_part = full_answer.slice(processed_answer_parts_len, processed_answer_parts_len + part.value.length);
+                    answer_span = `<span class="${answer_typeClass}">${non_normalized_part}</span>`;
+                } else {
+                    answer_span = `<span class="${answer_typeClass}">${part.value}</span>`;
+                }
+
+                // If the part is removed, we don't want to increment the processed_answer_parts_len.
+                processed_answer_parts_len += part.value.length;
             }
 
             recon_entrySpans.push(entry_span);
@@ -98,13 +125,13 @@ function last_item_includes(arr_of_strings, str) {
 }
 
 /**
-    * Takes an element and destructs its text into separate elements.
-    * <span class="typeGood">ab</span>
-    * ↓
-    * <span class="typeGood">a</span>
-    * <span class="typeGood">b</span>
-    * @param {Element} elem Element to destruct.
-    */
+ * Takes an element and destructs its text into separate elements.
+ * <span class="typeGood">ab</span>
+ * ↓
+ * <span class="typeGood">a</span>
+ * <span class="typeGood">b</span>
+ * @param {Element} elem Element to destruct.
+ */
 function destructLetters(elem) {
     let elemText = elem.innerText;
     for (let i = elemText.length - 1; i >= 0; i--) {
@@ -122,8 +149,10 @@ function destructLetters(elem) {
  * @returns .innerText of all elements in listElems combined.
  */
 function constructLetters(listElems) {
-    return [...listElems].map(elem => elem.innerHTML).join('').trim();
+    return [...listElems]
+        .map((elem) => elem.innerHTML)
+        .join('')
+        .trim();
 }
-
 
 export { ignoreCase };
