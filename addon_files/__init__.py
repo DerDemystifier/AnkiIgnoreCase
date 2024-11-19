@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import re  # Added import for regex
@@ -6,6 +7,7 @@ from aqt import gui_hooks, mw
 import aqt
 from aqt.utils import showInfo
 from aqt.addons import AddonsDialog
+from anki.cards import Card
 
 from .utils import addScriptTag, delete_all_deps, removeScriptTag
 
@@ -108,6 +110,41 @@ def startupCheck() -> None:
 
     # Call the function to insert the script tag
     inspectAllNoteTypes()
+
+
+@gui_hooks.card_will_show.append
+def inject_addon_config(html: str, card: Card, kind: str) -> str:
+    # We need to inject the config into the card template so that the JS can access it
+    if not mw or not mw.col:
+        return html
+
+    # kind is either "reviewQuestion" or "reviewAnswer"
+    if kind != "reviewAnswer":
+        return html
+
+    js_code = f"""
+        window.addon_config = {json.dumps(config)};
+    """
+    # Wrap JS code in script tags
+    script_element = f"<script>{js_code}</script>"
+
+    # Prepend script to answer HTML
+    new_html = script_element + html
+
+    return new_html
+
+
+@gui_hooks.addon_config_editor_will_update_json.append
+def on_config_save(config_text: str, addon: str) -> str:
+    if not mw or not mw.addonManager or addon != __name__:
+        return config_text
+
+    # Update the global config variable with the parsed config
+    global config
+
+    config = json.loads(config_text)
+
+    return config_text
 
 
 @gui_hooks.addons_dialog_will_delete_addons.append
