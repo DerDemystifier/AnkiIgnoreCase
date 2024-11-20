@@ -1,4 +1,5 @@
 {
     "ignore_case": true,
-    "ignore_accents": false
+    "ignore_accents": false,
+    "ignore_punctuations": false
 }

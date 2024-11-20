@@ -6,11 +6,10 @@ import time
 from typing import Any
 from aqt import gui_hooks, mw
 from aqt.utils import showInfo
-from aqt.addons import AddonsDialog
+from aqt.addons import AddonsDialog, AddonMeta
 from anki.cards import Card
 
 from .utils import addScriptTag, delete_all_deps, removeScriptTag
-
 
 
 __version__ = time.strftime("%Y-%m-%d_%H-%M")
@@ -57,7 +56,9 @@ def inspectNoteType(note_type: Any, intent: str):
             and type_pattern.search(question_template)  # or answer_template, no matter
         ):
             updated = True
-            card_type["afmt"] = addScriptTag(card_type["afmt"], smarterTypeField_scriptTag)
+            card_type["afmt"] = addScriptTag(
+                card_type["afmt"], smarterTypeField_scriptTag
+            )
 
     if updated:
         # Update the model in the collection
@@ -83,7 +84,9 @@ def setupAddon():
     path_js = os.path.join(addon_path, "_smarterTypeField.min.js")
     filename_save = f"_smarterTypeField.min{__version__}.js"
     # copy file to media folder after deleting all previous versions
-    delete_all_deps(media_collection_dir, "_ignoreCase") # Remove this in later versions
+    delete_all_deps(
+        media_collection_dir, "_ignoreCase"
+    )  # Remove this in later versions
     delete_all_deps(media_collection_dir, "_smarterTypeField")
     shutil.copyfile(path_js, os.path.join(media_collection_dir, filename_save))
 
@@ -106,7 +109,9 @@ def startupCheck() -> None:
         (
             os.path.exists(os.path.join(addon_path, "VERSION")),
             os.path.exists(
-                os.path.join(media_collection_dir, f"_smarterTypeField.min{__version__}.js")
+                os.path.join(
+                    media_collection_dir, f"_smarterTypeField.min{__version__}.js"
+                )
             ),
         )
     ):
@@ -119,7 +124,7 @@ def startupCheck() -> None:
 @gui_hooks.card_will_show.append
 def inject_addon_config(html: str, card: Card, kind: str) -> str:
     # We need to inject the config into the card template so that the JS can access it
-    if not mw or not mw.col:
+    if not mw or not mw.col or not config:
         return html
 
     # kind is either "reviewQuestion" or "reviewAnswer"
@@ -136,6 +141,19 @@ def inject_addon_config(html: str, card: Card, kind: str) -> str:
     new_html = script_element + html
 
     return new_html
+
+
+@gui_hooks.addons_dialog_did_change_selected_addon.append
+def on_addons_dialog_did_change_selected_addon(
+    dialog: AddonsDialog, addon: AddonMeta
+) -> None:
+    if not mw or not mw.col:
+        return
+
+    global config
+
+    if config:
+        config.update({"enabled": mw.addonManager.isEnabled(__name__)})
 
 
 @gui_hooks.addon_config_editor_will_update_json.append

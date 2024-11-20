@@ -37,17 +37,26 @@ function compareInputToAnswer(addon_config) {
     const full_answer = constructLetters(answerSpans);
 
     const diffCharsOpts = addon_config.ignore_case ? { ignoreCase: true } : {};
-    let diff = diffChars(full_entry, full_answer, diffCharsOpts);
+    let diff = () => diffChars(full_entry, full_answer, diffCharsOpts);
 
-    let normalized_entry = null;
-    let normalized_answer = null;
     if (addon_config.ignore_accents) {
         // Remove accents from both entry and answer.
-        normalized_entry = full_entry.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        normalized_answer = full_answer.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        var normalized_entry = full_entry.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        var normalized_answer = full_answer.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-        diff = diffChars(normalized_entry, normalized_answer, diffCharsOpts);
+        diff = () => diffChars(normalized_entry, normalized_answer, diffCharsOpts);
     }
+    if (addon_config.ignore_punctuations) {
+        // Remove punctuations from both entry and answer.
+        let prev_entry = normalized_entry || full_entry;
+        let prev_answer = normalized_answer || full_answer;
+        let sanitized_entry = prev_entry.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
+        let sanitized_answer = prev_answer.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
+
+        diff = () => diffChars(sanitized_entry, sanitized_answer, diffCharsOpts);
+    }
+
+    diff = diff(); // execute the diff function to get the diff array.
 
     // diff.length === 1 means that the input is exactly the same as the answer, only case different.
     if (diff.length === 1) {
