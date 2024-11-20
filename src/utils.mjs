@@ -2,8 +2,6 @@
 
 import { diffChars } from 'diff';
 
-const addon_config = window.addon_config;
-
 /**
  * Makes comparison case insensitive. For example :
  * MaRRakesh
@@ -17,7 +15,7 @@ const addon_config = window.addon_config;
  *
  * In previous versions, I used to use my own algo for comparison, but as it started to get more complex, I decided to use a library for it. Now I use the diffChars() function from the jsdiff library, which uses state of the art algorithms to compare strings. It returns an array of objects, each object has a value and a boolean property called added or removed. If added is true, then the value is an addition, if removed is true, then the value is a deletion. If both are false, then it's a common part.
  */
-function ignoreCase() {
+function compareInputToAnswer(addon_config) {
     // if there's no arrow, that means there's no comparison, which means the user hasn't typed anything or got the correct answer.
     if (!document.querySelector('span#typearrow')) return;
 
@@ -38,7 +36,8 @@ function ignoreCase() {
     const full_entry = constructLetters(entrySpans);
     const full_answer = constructLetters(answerSpans);
 
-    let diff = diffChars(full_entry, full_answer, { ignoreCase: true });
+    const diffCharsOpts = addon_config.ignore_case ? { ignoreCase: true } : {};
+    let diff = diffChars(full_entry, full_answer, diffCharsOpts);
 
     let normalized_entry = null;
     let normalized_answer = null;
@@ -47,7 +46,7 @@ function ignoreCase() {
         normalized_entry = full_entry.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         normalized_answer = full_answer.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-        diff = diffChars(normalized_entry, normalized_answer, { ignoreCase: true });
+        diff = diffChars(normalized_entry, normalized_answer, diffCharsOpts);
     }
 
     // diff.length === 1 means that the input is exactly the same as the answer, only case different.
@@ -155,4 +154,4 @@ function constructLetters(listElems) {
         .trim();
 }
 
-export { ignoreCase };
+export { compareInputToAnswer };

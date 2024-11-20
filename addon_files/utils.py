@@ -17,6 +17,7 @@ def addScriptTag(template: str, script_tag: str) -> str:
 
 def removeScriptTag(template: str) -> str:
     # Using regex, remove any old script tag if it exists
-    template = re.sub("<script role='ignoreCase'.+script>", "", template, flags=re.IGNORECASE)
+    template = re.sub("<script role='ignoreCase'.+script>", "", template, flags=re.IGNORECASE)  # Remove this in later versions
+    template = re.sub("<script role='smarterTypeField'.+script>", "", template, flags=re.IGNORECASE)
     template = template.strip()
     return template

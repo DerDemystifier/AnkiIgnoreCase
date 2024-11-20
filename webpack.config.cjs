@@ -7,9 +7,9 @@ const isProduction = process.env.NODE_ENV == 'production';
 
 
 const config = {
-    entry: './src/ignoreCase.js',
+    entry: './src/smarterTypeField.js',
     output: {
-        filename: "ignoreCase.min.js",
+        filename: "smarterTypeField.min.js",
         path: path.resolve(__dirname, 'docs'),
     },
     plugins: [
@@ -17,7 +17,7 @@ const config = {
             events: {
                 onEnd: {
                     copy: [
-                        { source: 'docs/ignoreCase.min.js', destination: 'addon_files/_ignoreCase.min.js' }
+                        { source: 'docs/smarterTypeField.min.js', destination: 'addon_files/_smarterTypeField.min.js' }
                     ]
                 }
             }

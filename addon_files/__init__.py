@@ -13,9 +13,9 @@ from .utils import addScriptTag, delete_all_deps, removeScriptTag
 
 
 
-__version__ = '2024-11-20_10-26' # time.strftime("%Y-%m-%d_%H-%M")
+__version__ = time.strftime("%Y-%m-%d_%H-%M")
 
-ignoreCase_scriptTag = f"""<script role='ignoreCase' src="_ignoreCase.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js';document.head.appendChild(script);"></script>"""
+smarterTypeField_scriptTag = f"""<script role='smarterTypeField' src="_smarterTypeField.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/SmarterTypeField/smarterTypeField.min.js';document.head.appendChild(script);"></script>"""
 
 addon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
@@ -44,7 +44,7 @@ def inspectNoteType(note_type: Any, intent: str):
         answer_template = card_type["afmt"]
         # if there's no type field anymore or the user wants to uninstall it
         if (
-            ignoreCase_scriptTag in answer_template
+            smarterTypeField_scriptTag in answer_template
             and not type_pattern.search(
                 question_template
             )  # or answer_template, no matter
@@ -53,11 +53,11 @@ def inspectNoteType(note_type: Any, intent: str):
             card_type["afmt"] = removeScriptTag(card_type["afmt"])
         elif (
             # Otherwise, if the type field is present but the script tag is not in the answer template
-            ignoreCase_scriptTag not in answer_template
+            smarterTypeField_scriptTag not in answer_template
             and type_pattern.search(question_template)  # or answer_template, no matter
         ):
             updated = True
-            card_type["afmt"] = addScriptTag(card_type["afmt"], ignoreCase_scriptTag)
+            card_type["afmt"] = addScriptTag(card_type["afmt"], smarterTypeField_scriptTag)
 
     if updated:
         # Update the model in the collection
@@ -80,10 +80,11 @@ def setupAddon():
         return
 
     # setup Media Folder
-    path_js = os.path.join(addon_path, "_ignoreCase.min.js")
-    filename_save = f"_ignoreCase.min{__version__}.js"
+    path_js = os.path.join(addon_path, "_smarterTypeField.min.js")
+    filename_save = f"_smarterTypeField.min{__version__}.js"
     # copy file to media folder after deleting all previous versions
-    delete_all_deps(media_collection_dir, "_ignoreCase")
+    delete_all_deps(media_collection_dir, "_ignoreCase") # Remove this in later versions
+    delete_all_deps(media_collection_dir, "_smarterTypeField")
     shutil.copyfile(path_js, os.path.join(media_collection_dir, filename_save))
 
     # create or replace the VERSION file
@@ -105,7 +106,7 @@ def startupCheck() -> None:
         (
             os.path.exists(os.path.join(addon_path, "VERSION")),
             os.path.exists(
-                os.path.join(media_collection_dir, f"_ignoreCase.min{__version__}.js")
+                os.path.join(media_collection_dir, f"_smarterTypeField.min{__version__}.js")
             ),
         )
     ):
@@ -156,9 +157,9 @@ def on_addons_dialog_will_delete_addons(
 ) -> None:
     if not mw or not mw.col or not media_collection_dir:
         raise Exception(
-            "AnkiIgnoreCase: An error occurred while uninstalling the addon."
+            "SmarterTypeField: An error occurred while uninstalling the addon."
         )
 
     if __name__ in addon_ids:
         inspectAllNoteTypes("uninstall")
-        delete_all_deps(media_collection_dir, "_ignoreCase")
+        delete_all_deps(media_collection_dir, "_smarterTypeField")

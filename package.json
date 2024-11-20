@@ -1,7 +1,7 @@
 {
-  "name": "anki-ignore-case",
-  "version": "1.2.3",
-  "description": "Case insensitivity for {{type:}} field",
+  "name": "smarter-type-field",
+  "version": "2.0.0",
+  "description": "Flexible matching for {{type:}} field",
   "mainComment": "index.js",
   "private": true,
   "type": "module",

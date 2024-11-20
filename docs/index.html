@@ -5,21 +5,21 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AnkiIgnoreCase | Simply makes {{type:}} answers case insensitive.</title>
+    <title>SmarterTypeField | Flexible matching for <code>{{type:}}</code> field</title>
     <meta name="generator" content="Jekyll v3.9.3">
-    <meta property="og:title" content="AnkiIgnoreCase">
+    <meta property="og:title" content="SmarterTypeField">
     <meta property="og:locale" content="en_US">
-    <meta name="description" content="Simply makes {{type:}} answers case insensitive.">
-    <meta property="og:description" content="Simply makes {{type:}} answers case insensitive.">
-    <link rel="canonical" href="https://derdemystifier.github.io/AnkiIgnoreCase/">
-    <meta property="og:url" content="https://derdemystifier.github.io/AnkiIgnoreCase/">
-    <meta property="og:image" content="https://derdemystifier.github.io/AnkiIgnoreCase/images/after.png">
+    <meta name="description" content="Flexible matching for <code>{{type:}}</code> field">
+    <meta property="og:description" content="Flexible matching for <code>{{type:}}</code> field">
+    <link rel="canonical" href="https://derdemystifier.github.io/SmarterTypeField/">
+    <meta property="og:url" content="https://derdemystifier.github.io/SmarterTypeField/">
+    <meta property="og:image" content="https://derdemystifier.github.io/SmarterTypeField/images/after.png">
     <meta name="twitter:creator" content="@DerDemystifier">
-    <meta name="twitter:image" content="https://derdemystifier.github.io/AnkiIgnoreCase/images/after.png">
+    <meta name="twitter:image" content="https://derdemystifier.github.io/SmarterTypeField/images/after.png">
     <meta name="twitter:site" content="@DerDemystifier">
-    <meta name="twitter:title" content="AnkiIgnoreCase">
-    <meta name="twitter:description" content="Simply makes {{type:}} answers case insensitive.">
-    <meta name="twitter:image:src" content="https://derdemystifier.github.io/AnkiIgnoreCase/images/after.png">
+    <meta name="twitter:title" content="SmarterTypeField">
+    <meta name="twitter:description" content="Flexible matching for <code>{{type:}}</code> field">
+    <meta name="twitter:image:src" content="https://derdemystifier.github.io/SmarterTypeField/images/after.png">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:site" content="@DerDemystifier">
     <meta name="twitter:creator" content="@DerDemystifier">
@@ -28,10 +28,10 @@
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="images/favicon.ico" type="image/x-icon" />
     <meta http-equiv="content-security-policy" content="default-src 'none'; font-src 'self' data:; img-src 'self' data:; style-src 'unsafe-inline'; media-src 'self' data:; script-src 'unsafe-inline' data:; object-src 'self' data:; frame-src 'self' data:;">
-    <meta property="og:site_name" content="AnkiIgnoreCase">
+    <meta property="og:site_name" content="SmarterTypeField">
     <meta name="twitter:card" content="summary">
-    <meta property="twitter:title" content="AnkiIgnoreCase">
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","description":"Simply makes {{type:}} answers case insensitive.","headline":"AnkiIgnoreCase","name":"AnkiIgnoreCase","url":"https://derdemystifier.github.io/AnkiIgnoreCase/"}</script>
+    <meta property="twitter:title" content="SmarterTypeField">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","description":"Flexible matching for <code>{{type:}}</code> field","headline":"SmarterTypeField","name":"SmarterTypeField","url":"https://derdemystifier.github.io/SmarterTypeField/"}</script>
     <link rel="stylesheet" href="style.css">
     <meta http-equiv="content-security-policy" content="default-src 'none'; font-src 'self' data:; img-src 'self' data:; style-src 'unsafe-inline'; media-src 'self' data:; script-src 'unsafe-inline' data:; object-src 'self' data:; frame-src 'self' data:;">
     <style>
@@ -44,8 +44,8 @@
 
 <body>
     <div class="container-lg px-3 my-5 markdown-body">
-        <h1 align="center" id="div-aligncenterankiignorecasediv"><a href="https://github.com/DerDemystifier/AnkiIgnoreCase/">AnkiIgnoreCase</a></h1>
-        <h2 align="center" id="div-aligncentercase-insensitivity-for-type-fielddiv">Case insensitivity for <code class="language-plaintext highlighter-rouge">{{type:}}</code> field</h2>
+        <h1 align="center"><a href="https://github.com/DerDemystifier/SmarterTypeField/">SmarterTypeField</a></h1>
+        <h2 align="center">Flexible matching for <code class="language-plaintext highlighter-rouge">{{type:}}</code> field</h2>
 
         <p align="center">
             <img src="images/before.png" />
@@ -57,7 +57,13 @@
             <img src="images/after.png" />
         </p>
 
-        <p>Simply makes <code class="language-plaintext highlighter-rouge">{{type:}}</code> answers case insensitive.</p>
+        <p>Adds three options to the <code class="language-plaintext highlighter-rouge">{{type:}}</code> field in Anki:</p>
+        <ul>
+            <li><code>ignore_case</code> makes the type field ignore case when checking the answer.</li>
+            <li><code>ignore_accents</code> allows the type field to disregard accents when checking the answer.</li>
+            <li><code>ignore_punctuations</code> makes the type field ignore punctuation marks when checking the answer.</li>
+        </ul>
+        <p>The options can be used together or separately.</p>
 
         <h2 id="installation">Installation</h2>
         <ul>
@@ -74,7 +80,7 @@
         <p>Simply add this line to the Back Template of your Anki Cards.</p>
         <div class="language-html highlighter-rouge">
             <div class="highlight">
-                <pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+                <pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://derdemystifier.github.io/SmarterTypeField/smarterTypeField.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
 </code></pre>
             </div>
         </div>
@@ -87,7 +93,7 @@
         <blockquote>
             <p>If you install the addon. This will apply even when you don't have Internet access. But it won't if you chose manual install; Since the script tag above fetches the script, you need Internet. If that's not always available, then:</p>
             <ol>
-                <li>Copy the content of the file <a href="https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js"><code class="language-plaintext highlighter-rouge">ignoreCase.min.js</code></a>.</li>
+                <li>Copy the content of the file <a href="https://derdemystifier.github.io/SmarterTypeField/smarterTypeField.min.js"><code class="language-plaintext highlighter-rouge">smarterTypeField.min.js</code></a>.</li>
                 <li>Paste it in the Back Template of your Anki card like so:
                     <div class="language-html highlighter-rouge">
                         <div class="highlight">
@@ -129,7 +135,7 @@
         <h3 id="does-this-work-in-anki-version-2xxx">How to uninstall?</h3>
 
         <blockquote>
-            <p>Go to Addons->ignoreCase->Config and change "enabled" with false, then restart Anki. That's it! You can then delete the addon if you wish by hitting the uninstall button.</p>
+            <p>Go to Addons->SmarterTypeField->Config and change "enabled" with false, then restart Anki. That's it! You can then delete the addon if you wish by hitting the uninstall button.</p>
         </blockquote>
 
         <h3 id="does-this-work-in-anki-version-2xxx">Does this work in Anki Version 2.x.xx</h3>

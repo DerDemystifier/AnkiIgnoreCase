@@ -1,7 +1,13 @@
-import { ignoreCase } from './utils.mjs';
+import { compareInputToAnswer } from './utils.mjs';
 
+// default config
+const addon_config = {
+    ignore_case: true,
+    ignore_accents: false,
+    ignore_punctuations: false,
+};
 
-describe('ignoreCases_function', () => {
+describe('compareInputToAnswer_function', () => {
 
     it("detects missing letter", () => {
         /**
@@ -21,7 +27,7 @@ describe('ignoreCases_function', () => {
                 </code>`;
 
         // Exercise
-        ignoreCase();
+        compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
@@ -45,7 +51,7 @@ describe('ignoreCases_function', () => {
         </code>`;
 
         // Exercise
-        ignoreCase();
+        compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
@@ -69,7 +75,7 @@ describe('ignoreCases_function', () => {
         </code>`;
 
         // Exercise
-        ignoreCase();
+        compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
@@ -93,7 +99,7 @@ describe('ignoreCases_function', () => {
         </code>`;
 
         // Exercise
-        ignoreCase();
+        compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
@@ -118,7 +124,7 @@ describe('ignoreCases_function', () => {
         </code>`;
 
         // Exercise
-        ignoreCase();
+        compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
