@@ -2,9 +2,9 @@ import json
 import os
 import shutil
 import re  # Added import for regex
+import time
 from typing import Any
 from aqt import gui_hooks, mw
-import aqt
 from aqt.utils import showInfo
 from aqt.addons import AddonsDialog
 from anki.cards import Card
@@ -12,7 +12,8 @@ from anki.cards import Card
 from .utils import addScriptTag, delete_all_deps, removeScriptTag
 
 
-__version__ = "2.0.0"
+
+__version__ = '2024-11-20_10-26' # time.strftime("%Y-%m-%d_%H-%M")
 
 ignoreCase_scriptTag = f"""<script role='ignoreCase' src="_ignoreCase.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/AnkiIgnoreCase/ignoreCase.min.js';document.head.appendChild(script);"></script>"""
 
@@ -44,14 +45,16 @@ def inspectNoteType(note_type: Any, intent: str):
         # if there's no type field anymore or the user wants to uninstall it
         if (
             ignoreCase_scriptTag in answer_template
-            and not type_pattern.search(question_template) # or answer_template, no matter
+            and not type_pattern.search(
+                question_template
+            )  # or answer_template, no matter
         ) or intent == "uninstall":
             updated = True
             card_type["afmt"] = removeScriptTag(card_type["afmt"])
         elif (
             # Otherwise, if the type field is present but the script tag is not in the answer template
             ignoreCase_scriptTag not in answer_template
-            and type_pattern.search(question_template) # or answer_template, no matter
+            and type_pattern.search(question_template)  # or answer_template, no matter
         ):
             updated = True
             card_type["afmt"] = addScriptTag(card_type["afmt"], ignoreCase_scriptTag)
