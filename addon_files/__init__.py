@@ -12,7 +12,7 @@ from anki.cards import Card
 from .utils import addScriptTag, delete_all_deps, removeScriptTag
 
 
-__version__ = time.strftime("%Y-%m-%d_%H-%M")
+__version__ = '2024-11-22_23-32' #time.strftime("%Y-%m-%d_%H-%M")
 
 smarterTypeField_scriptTag = f"""<script role='smarterTypeField' src="_smarterTypeField.min{__version__}.js" onerror="var script=document.createElement('script');script.src='https://derdemystifier.github.io/SmarterTypeField/smarterTypeField.min.js';document.head.appendChild(script);"></script>"""
 
@@ -23,6 +23,8 @@ addon_path = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 config = None
 if mw and mw.addonManager:
     config = mw.addonManager.getConfig(__name__)
+    if config:
+        config.update({"enabled": mw.addonManager.isEnabled(__name__)})
 
 media_collection_dir = None
 if mw and mw.col:
@@ -147,6 +149,13 @@ def inject_addon_config(html: str, card: Card, kind: str) -> str:
 def on_addons_dialog_did_change_selected_addon(
     dialog: AddonsDialog, addon: AddonMeta
 ) -> None:
+    """
+    Allows doing an action when a single add-on is selected.
+
+    Args:
+        dialog (AddonsDialog): The addons dialog instance.
+        addon (AddonMeta): Metadata of the selected addon.
+    """
     if not mw or not mw.col:
         return
 
@@ -158,6 +167,17 @@ def on_addons_dialog_did_change_selected_addon(
 
 @gui_hooks.addon_config_editor_will_update_json.append
 def on_config_save(config_text: str, addon: str) -> str:
+    """
+    Triggered when the user saves the configuration of the add-on.\n
+    Allows changing the text of the json configuration that was received from the user before actually reading it.\n
+    For example, you can replace new line in strings by some "\\\\n".
+
+    Args:
+        config_text (str): The JSON text of the configuration.
+        addon (str): The name of the add-on being configured.
+    Returns:
+        str: The original configuration text.
+    """
     if not mw or not mw.addonManager or addon != __name__:
         return config_text
 
@@ -165,6 +185,7 @@ def on_config_save(config_text: str, addon: str) -> str:
     global config
 
     config = json.loads(config_text)
+    config.update({"enabled": mw.addonManager.isEnabled(__name__)})
 
     return config_text
 
@@ -173,6 +194,13 @@ def on_config_save(config_text: str, addon: str) -> str:
 def on_addons_dialog_will_delete_addons(
     dialog: AddonsDialog, addon_ids: list[str]
 ) -> None:
+    """
+    Allows doing an action when the user deletes one or more add-ons.
+
+    Args:
+        dialog (AddonsDialog): The addons dialog instance.
+        addon_ids (list[str]): List of add-on IDs that will be deleted.
+    """
     if not mw or not mw.col or not media_collection_dir:
         raise Exception(
             "SmarterTypeField: An error occurred while uninstalling the addon."
