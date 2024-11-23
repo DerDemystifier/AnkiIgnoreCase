@@ -1,6 +1,7 @@
 'use strict';
 
 import { diffChars } from 'diff';
+import { isPunctuation, hasPunctuation, last_item_includes, constructLetters, extractWordsAndSymbols } from './helpers.mjs';
 
 /**
  * Makes comparison case insensitive. For example :
@@ -46,71 +47,111 @@ function compareInputToAnswer(addon_config) {
 
         diff = () => diffChars(normalized_entry, normalized_answer, diffCharsOpts);
     }
-    if (addon_config.ignore_punctuations) {
-        // Remove punctuations from both entry and answer.
-        let prev_entry = normalized_entry || full_entry;
-        let prev_answer = normalized_answer || full_answer;
-        let sanitized_entry = prev_entry.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
-        let sanitized_answer = prev_answer.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '');
 
-        diff = () => diffChars(sanitized_entry, sanitized_answer, diffCharsOpts);
+    diff = diff(); // execute the diff function to get the diff array
+
+    if (addon_config.ignore_punctuations) {
+        // If punctuations are ignored, we want to split the parts that contain punctuations so they can be processed separately.
+        const newDiffParts = [];
+
+        for (const part of diff) {
+            if (!part.value) continue;
+
+            if (!hasPunctuation(part.value)) {
+                newDiffParts.push(part);
+                continue;
+            }
+
+            if (part.value.split('').every((char) => isPunctuation(char))) {
+                // If part contains only punctuation, push it as is
+                newDiffParts.push(part);
+                continue;
+            }
+
+            // Split part if it contains punctuation into separate parts of words and punctuations.
+            const splitStrs = extractWordsAndSymbols(part.value);
+            if (splitStrs.length > 1) {
+                splitStrs.forEach((str) => {
+                    // parts should have the same properties as the original part. Just change the value.
+                    let newPart = { ...part };
+                    newPart.value = str;
+                    newDiffParts.push(newPart);
+                });
+            } else {
+                newDiffParts.push(part);
+            }
+        }
+
+        diff = newDiffParts;
     }
 
-    diff = diff(); // execute the diff function to get the diff array.
-
-    // diff.length === 1 means that the input is exactly the same as the answer, only case different.
     if (diff.length === 1) {
-        // In this case, remove the entry and ↓ and leave the answer marked green!
+        // diff.length === 1 means that the input is exactly the same as the answer, only case different.
+        //      in this case, remove the entry and ↓ and leave the answer marked green!
         answerSpans.forEach((span) => span.setAttribute('class', 'typeGood'));
         comparison_area.innerHTML = answerSpans.map((elem) => elem.outerHTML).join('');
     } else {
         // If they're not same, then reconstruct the entry and answer spans with the new classes based on the diff.
 
         // These arrays will contain the new spans with the new classes for entry and answer.
-        let recon_entrySpans = [];
-        let recon_answerSpans = [];
+        const recon_entrySpans = [],
+            recon_answerSpans = [];
 
         // We want to keep track of the original entry, so we can use it in display since diffChars ignores case and normalizes case diffs.
-        let full_entry_chars = full_entry.split('');
+        const full_entry_chars = full_entry.split('');
 
         /**
          * This variable keeps track of the length of processed parts so far in the answer, so we can use it to slice the original answer and get the non-normalized part.
+         * It should match the length of the original answer.
          * @type {number}
          */
         let processed_answer_parts_len = 0;
 
-        diff.forEach((part) => {
+        diff.forEach((part, index) => {
             // entry and answer spans have different coloring, so we need to use different classes for each.
-            const entry_typeClass = part.added ? 'typeMissed' : part.removed ? 'typeBad' : 'typeGood';
-            const answer_typeClass = part.added ? 'typeBad' : part.removed ? 'typeMissed' : 'typeGood';
+            let entry_typeClass = part.added ? 'typeMissed' : part.removed ? 'typeBad' : 'typeGood';
+            let answer_typeClass = part.added ? 'typeBad' : part.removed ? 'typeMissed' : 'typeGood';
 
             let entry_span = '',
                 answer_span = '';
 
+            //#region Entry processing
             if (entry_typeClass === 'typeMissed') {
-                if (!last_item_includes(recon_entrySpans, 'typeBad'))
-                    // Only add typeMissed if last item is not typeBad, to match better with answerSpans.
-                    entry_span = `<span class="typeMissed">-</span>`.repeat(part.value.length);
+                if (!addon_config.ignore_punctuations || !isPunctuation(part.value)) {
+                    // If punctuation is ignored, we don't want to add typeMissed for punctuation in entry.
+                    if (!last_item_includes(recon_entrySpans, 'typeBad'))
+                        // Only add typeMissed if last item is not typeBad, to match better with answerSpans.
+                        entry_span = `<span class="typeMissed">-</span>`.repeat(part.value.length);
+                }
             } else {
+                if (addon_config.ignore_punctuations && isPunctuation(part.value)) {
+                    entry_span = `<span class="typeGood">${full_entry_chars.splice(0, part.value.length).join('')}</span>`;
+                }
                 // We want to consume the original entry array in display, so we splice it based on how many chars to consume.
-                entry_span = `<span class="${entry_typeClass}">${full_entry_chars.splice(0, part.value.length).join('')}</span>`;
+                else entry_span = `<span class="${entry_typeClass}">${full_entry_chars.splice(0, part.value.length).join('')}</span>`;
             }
+            //#endregion
 
-            // If the part is removed, this means it was found in entry but not in answer
-            if (!part.removed) {
-                // answer doesn't show '-' for missed chars, so we don't need to do anything special in answer for cases where entry has a char that answer doesn't.
+            //#region Answer processing
+            if (answer_typeClass !== 'typeMissed') {
+                // If the part is missed in the answer, this means it was found in entry but not in answer!
+                //      so the entry will show '-' for this missed chars part and move on. There's nothing to be done for missed parts in answer.
 
-                if (addon_config.ignore_accents) {
-                    // slice this part from the original answer to get the non-normalized part.
-                    let non_normalized_part = full_answer.slice(processed_answer_parts_len, processed_answer_parts_len + part.value.length);
-                    answer_span = `<span class="${answer_typeClass}">${non_normalized_part}</span>`;
+                if (addon_config.ignore_punctuations && isPunctuation(part.value)) {
+                    // if this part is punctuation and punctuation is ignored, we want to show the part as typeGood.
+                    answer_span = `<span class="typeGood">${part.value}</span>`;
+                } else if (addon_config.ignore_accents) {
+                    // slice this part from the original answer to get the original part with accents.
+                    let original_part = full_answer.slice(processed_answer_parts_len, processed_answer_parts_len + part.value.length);
+                    answer_span = `<span class="${answer_typeClass}">${original_part}</span>`;
                 } else {
                     answer_span = `<span class="${answer_typeClass}">${part.value}</span>`;
                 }
 
-                // If the part is removed, we don't want to increment the processed_answer_parts_len.
+                // Increment the processed_answer_parts_len. But only if the part is not removed (aka typeMissed), because if it's removed, it's not in the answer, only entry, so we don't want to increment the length.
                 processed_answer_parts_len += part.value.length;
             }
+            //#endregion
 
             recon_entrySpans.push(entry_span);
             recon_answerSpans.push(answer_span);
@@ -119,48 +160,6 @@ function compareInputToAnswer(addon_config) {
         // Finally display the new spans in the comparison area.
         comparison_area.innerHTML = `${recon_entrySpans.join('')}<br><span id="typearrow">⇩</span><br>${recon_answerSpans.join('')}`;
     }
-}
-
-/**
- * Checks if the last item of the array includes the string.
- * @param {Array<string>} arr_of_strings The array of strings to check the last item of.
- * @param {string} str The string to check if it's included in the last item of the array.
- * @returns {boolean} true if the last item of the array includes the string, false otherwise.
- */
-function last_item_includes(arr_of_strings, str) {
-    // console.log('arr_of_strings :>> ', arr_of_strings);
-    return arr_of_strings.length > 0 && arr_of_strings.at(-1).includes(str);
-}
-
-/**
- * Takes an element and destructs its text into separate elements.
- * <span class="typeGood">ab</span>
- * ↓
- * <span class="typeGood">a</span>
- * <span class="typeGood">b</span>
- * @param {Element} elem Element to destruct.
- */
-function destructLetters(elem) {
-    let elemText = elem.innerText;
-    for (let i = elemText.length - 1; i >= 0; i--) {
-        let new_char_elem = elem.cloneNode(true);
-        new_char_elem.innerHTML = elemText[i];
-        elem.parentNode.insertBefore(new_char_elem, elem.nextSibling);
-    }
-    elem.remove();
-}
-
-/**
- * Takes a NodeList, combines them and returns the resulting .innerText
- * Ex: [<span>H</span>, <span>i</span>, <span>!</span>] => Hi!
- * @param {NodeList} listElems Elements to combine and return innerText of.
- * @returns .innerText of all elements in listElems combined.
- */
-function constructLetters(listElems) {
-    return [...listElems]
-        .map((elem) => elem.innerHTML)
-        .join('')
-        .trim();
 }
 
 export { compareInputToAnswer };
