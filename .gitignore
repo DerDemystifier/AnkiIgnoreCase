@@ -1,3 +1,4 @@
 node_modules
 */meta.json
 */__pycache__/
+addon_files/CONFIG_TIMESTAMP
