@@ -1,5 +1,4 @@
 import os
-import time
 from typing import Any, Union
 
 from aqt import mw
