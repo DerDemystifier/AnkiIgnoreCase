@@ -27,36 +27,80 @@ from .utils import (
 
 
 def addon_script_tag() -> str:
+    """
+    Generates an HTML script tag for the SmarterTypeField addon.
+
+    The script tag includes the role attribute set to 'smarterTypeField',
+    the source file with the version number, and a data-config attribute
+    with a configuration timestamp.
+
+    Returns:
+        str: A formatted HTML script tag as a string.
+    """
     return f"""<script role='smarterTypeField' src="_smarterTypeField.min{__version__}.js" data-config="{__config_timestamp__}"></script>"""
 
 
 def getConfig() -> dict[str, Any]:
+    """
+    Retrieve the configuration for the addon.
+    This function fetches the configuration settings for the addon from Anki's addon manager.
+    If the addon manager is not available, it returns an empty dictionary.
+
+    The configuration is loaded from the addon's configuration file (config.json) if it is not already present
+    in the addon manager.
+    Additionally, it updates the configuration with the enabled status of the addon.
+
+    Returns:
+        dict[str, Any]: A dictionary containing the configuration settings for the addon.
+    """
     if not mw:
         return {}
 
+    # Fetch the configuration from the addon manager or load the default from the config file
     config = mw.addonManager.getConfig(__name__) or json.loads(
         readFile(os.path.join(ADDON_PATH, "config.json")) or "{}"
     )
+
+    # Update the configuration with the addon 'enabled' status
     config.update({"enabled": mw.addonManager.isEnabled(__name__)})
     return config
 
 
 def updateConfigFile(config: Dict[str, Any] = {}) -> tuple[dict[str, Any], str]:
+    """
+    Updates the configuration file for the SmarterTypeField addon.
+    Args:
+        config (Dict[str, Any], optional): A dictionary containing the configuration settings.
+                                           If not provided, the current configuration will be fetched.
+    Returns:
+        tuple[dict[str, Any], str]: A tuple containing the updated configuration dictionary and the timestamp
+                                    of when the configuration was updated.
+    Notes:
+        - If the config is not provided, it fetches the current configuration using `getConfig()`.
+        - The function updates the config with the addon 'enabled' status.
+        - Deletes all dependencies related to the previous configuration.
+        - Writes the updated configuration to a file with a timestamp.
+        - Writes the timestamp to a separate file named "CONFIG_TIMESTAMP".
+    """
     if not mw:
         return (config, "")
 
     if not config:
         config = getConfig()
     else:
+        # If config is provided, just update the 'enabled' status
         config.update({"enabled": mw.addonManager.isEnabled(__name__)})
 
     timestamp = currentTimestamp()
     delete_all_deps(media_collection_dir, "_smarterTypeField.config")
 
+    # update the configuration file with the new configuration
     writeToFile(
         os.path.join(media_collection_dir, f"_smarterTypeField.config{timestamp}.json"),
         json.dumps(config, indent=4),
     )
+
+    # update the configuration timestamp file so JS can fetch the latest config
     writeToFile(
         os.path.join(ADDON_PATH, "CONFIG_TIMESTAMP"),
         timestamp,
@@ -65,7 +109,15 @@ def updateConfigFile(config: Dict[str, Any] = {}) -> tuple[dict[str, Any], str]:
     return (config, timestamp)
 
 
-def inspectNoteType(note_type: Any, intent: str):
+def inspectNoteType(note_type: Any, intent: str) -> None:
+    """
+    Inspects and updates the note type templates based on the presence of type fields and script tags.
+    Args:
+        note_type (Any): The note type object containing card templates.
+        intent (str): The intent of the operation, can be "uninstall" or "install".
+    Returns:
+        None
+    """
     global __addon_config__, __config_timestamp__
 
     # Get the card templates for the model
@@ -135,6 +187,12 @@ def setupAddon():
 # Call the function to check for addon update
 @gui_hooks.profile_did_open.append
 def startupCheck() -> None:
+    """Executed whenever a user profile has been opened
+
+    Please note that this hook will also be called on profile switches, so if you
+    are looking to simply delay an add-on action in a single-shot manner,
+    `main_window_did_init` is likely the more suitable choice.
+    """
     global __addon_config__, media_collection_dir
     if not mw or not mw.col:
         return
@@ -160,6 +218,10 @@ def startupCheck() -> None:
 
 @gui_hooks.card_will_show.append
 def inject_addon_config(html: str, card: Card, kind: str) -> str:
+    """
+    Can modify card text before review/preview.
+    """
+
     # We need to inject the __addon_config__ into the card template so that the JS can access it
     if not mw or not mw.col or not __addon_config__:
         return html

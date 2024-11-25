@@ -1,4 +1,22 @@
 import os
+
+"""
+This module contains global variables and utility functions for the SmarterTypeField Anki add-on.
+
+Constants:
+    ADDON_PATH (str): The path to the add-on directory.
+    VERSION_FILE (str): The path to the version file.
+    CONFIG_TIMESTAMP_FILE (str): The path to the configuration timestamp file.
+
+Functions:
+    updateVersionFile() -> None:
+
+Variables:
+    media_collection_dir (str or None): The directory of the media collection, if available.
+    __version__ (Union[str, None]): The version of the add-on, read from the version file.
+    __config_timestamp__ (Union[str, None]): The configuration timestamp, read from the configuration timestamp file.
+    __addon_config__ (Union[dict[str, Any], None]): The configuration of the add-on, initially set to None.
+"""
 from typing import Any, Union
 
 from aqt import mw
@@ -12,17 +30,30 @@ CONFIG_TIMESTAMP_FILE = os.path.join(ADDON_PATH, "CONFIG_TIMESTAMP")
 
 
 def updateVersionFile() -> None:
+    """
+    Updates the version file with the current timestamp.
+
+    This function writes the current timestamp to the version file specified
+    by the VERSION_FILE constant. It uses the writeToFile function to perform
+    the file writing operation and the currentTimestamp function to get the
+    current timestamp.
+
+    Returns:
+        None
+    """
     writeToFile(VERSION_FILE, currentTimestamp())
 
 
-updateVersionFile()
+# updateVersionFile()  # Uncomment this line while developing the add-on to update the version file on each run
 
 media_collection_dir = None
 if mw and mw.col:
     media_collection_dir = mw.col.media.dir()
 
-
+# The version is used to track updates.
 __version__: Union[str, None] = readFile(VERSION_FILE)
+
+# The configuration timestamp is passed to the JavaScript code to fetch config json file when on mobile
 __config_timestamp__: Union[str, None] = readFile(CONFIG_TIMESTAMP_FILE)
 
 __addon_config__: Union[dict[str, Any], None] = None
