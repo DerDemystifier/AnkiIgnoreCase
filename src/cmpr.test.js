@@ -7,7 +7,7 @@ const addon_config = {
     ignore_punctuations: false,
 };
 
-describe('compareInputToAnswer_function', () => {
+describe('ignore_case tests', () => {
     it('detects missing letter', () => {
         /**
          * Issue: Case when user misses a letter.
@@ -154,6 +154,164 @@ describe('compareInputToAnswer_function', () => {
             f(/*html*/ `
         <code id="typeans">
             <span class="typeGood">abc</span>
+        </code>`)
+        );
+    });
+});
+
+describe('ignore_accents tests', () => {
+    it('Ignore Accents - Basic Latin', () => {
+        /**
+         * Issue: Case when there's an accent mismatch.
+         * User types: Reykjavik
+         * Answer is : Reykjavík
+         * Vanilla result: ì is marked as missed
+         * Expected result: All green
+         */
+
+        addon_config.ignore_accents = true;
+
+        // Setup
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">Reykjav</span><span class="typeBad">i</span><span class="typeGood">c</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeGood">Reykjav</span><span class="typeMissed">ì</span><span class="typeGood">c</span>
+        </code>`);
+
+        // Exercise
+        compareInputToAnswer(addon_config);
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">Reykjav</span><span class="typeGood">ì</span><span class="typeGood">c</span>
+        </code>`)
+        );
+    });
+
+    it('Ignore Accents - Extended Characters', () => {
+        /**
+         * Issue: Case when there's an accent mismatch or an umlaut.
+         * User types: naive
+         * Answer is : naïve
+         * Vanilla result: ï is marked as missed
+         * Expected result: All green
+         */
+
+        addon_config.ignore_accents = true;
+
+        // Setup
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">na</span><span class="typeBad">i</span><span class="typeGood">ve</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeGood">na</span><span class="typeMissed">ï</span><span class="typeGood">ve</span>
+        </code>`);
+
+        // Exercise
+        compareInputToAnswer(addon_config);
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">na</span><span class="typeGood">ï</span><span class="typeGood">ve</span>
+        </code>`)
+        );
+    });
+
+    it('Ignore Accents - Mixed Case and Accents', () => {
+        /**
+         * Issue: Case when an accent mismatch occurs in a mixed case word.
+         * User types: Éxample
+         * Answer is : example
+         * Vanilla result: É is marked as missed
+         * Expected result: All green
+         */
+
+        addon_config.ignore_case = true;
+        addon_config.ignore_accents = true;
+
+        // Setup
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeBad">É</span><span class="typeGood">xample</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeMissed">e</span><span class="typeGood">xample</span>
+        </code>`);
+
+        // Exercise
+        compareInputToAnswer(addon_config);
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">e</span><span class="typeGood">xample</span>
+        </code>`)
+        );
+    });
+
+    it('Ignore Accents - Multiple Accents in a String', () => {
+        /**
+         * Issue: Case when there are multiple accent mismatches.
+         * User types: eleve
+         * Answer is : élève
+         * Vanilla result: é and è are marked as missed
+         * Expected result: All green
+         */
+
+        addon_config.ignore_accents = true;
+
+        // Setup
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeBad">e</span><span class="typeGood">l</span><span class="typeBad">e</span><span class="typeGood">ve</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeMissed">é</span><span class="typeGood">l</span><span class="typeMissed">è</span><span class="typeGood">ve</span>
+        </code>`);
+
+        // Exercise
+        compareInputToAnswer(addon_config);
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">é</span><span class="typeGood">l</span><span class="typeGood">è</span><span class="typeGood">ve</span>
+        </code>`)
+        );
+    });
+
+    it('Ignore Accents - Non-Latin Scripts', () => {
+        /**
+         * Issue: Case when there are accent mismatches in non-Latin scripts.
+         * User types: Toi thich lap trinh
+         * Answer is : Tôi thích lập trình
+         * Vanilla result: é and è are marked as missed
+         * Expected result: All green
+         */
+
+        addon_config.ignore_accents = true;
+
+        // Setup
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">T</span><span class="typeBad">o</span><span class="typeGood">i th</span><span class="typeBad">i</span><span class="typeGood">ch l</span><span class="typeBad">a</span><span class="typeGood">p tr</span><span class="typeBad">i</span><span class="typeGood">nh</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeGood">T</span><span class="typeMissed">ô</span><span class="typeGood">i th</span><span class="typeMissed">í</span><span class="typeGood">ch l</span><span class="typeMissed">ậ</span><span class="typeGood">p tr</span><span class="typeMissed">ì</span><span class="typeGood">nh</span>
+        </code>`);
+
+        // Exercise
+        compareInputToAnswer(addon_config);
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">T</span><span class="typeGood">ô</span><span class="typeGood">i th</span><span class="typeGood">í</span><span class="typeGood">ch l</span><span class="typeGood">ậ</span><span class="typeGood">p tr</span><span class="typeGood">ì</span><span class="typeGood">nh</span>
         </code>`)
         );
     });
