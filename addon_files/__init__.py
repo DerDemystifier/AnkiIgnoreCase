@@ -7,7 +7,6 @@ from typing import Any, Dict
 from anki.cards import Card
 from aqt import gui_hooks, mw
 from aqt.addons import AddonMeta, AddonsDialog
-from aqt.utils import showInfo
 
 from .globals import (
     ADDON_PATH,
@@ -229,8 +228,6 @@ def inject_addon_config(html: str, card: Card, kind: str) -> str:
     # kind is either "reviewQuestion" or "reviewAnswer"
     if kind != "reviewAnswer":
         return html
-
-    showInfo(str(__addon_config__))
 
     js_code = f"""
         window.addon_config = {json.dumps(__addon_config__)};

@@ -8,8 +8,7 @@ const addon_config = {
 };
 
 describe('compareInputToAnswer_function', () => {
-
-    it("detects missing letter", () => {
+    it('detects missing letter', () => {
         /**
          * Issue: Case when user misses a letter.
          * User types: aBcde
@@ -19,22 +18,29 @@ describe('compareInputToAnswer_function', () => {
          */
 
         // Setup
-        document.body.innerHTML =
-        /*html*/`<code id="typeans">
-                    <span class="typeGood">a</span><span class="typeBad">B</span><span class="typeGood">cde</span>
+        document.body.innerHTML = f(/*html*/ `
+            <code id="typeans">
+                <span class="typeGood">a</span><span class="typeBad">B</span><span class="typeGood">cde</span>
                     <br><span id="typearrow">↓</span><br>
-                    <span class="typeGood">a</span><span class="typeMissed">bc</span><span class="typeGood">cde</span>
-                </code>`;
+                <span class="typeGood">a</span><span class="typeMissed">bc</span><span class="typeGood">cde</span>
+            </code>`);
 
         // Exercise
         compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
-            /*html*/`<code id="typeans"><span class="typeGood">aBc</span><span class="typeMissed">-</span><span class="typeGood">de</span><br><span id="typearrow">⇩</span><br><span class="typeGood">abc</span><span class="typeBad">c</span><span class="typeGood">de</span></code>`);
+            f(/*html*/ `
+                <code id="typeans">
+                    <span class="typeGood">aBc</span><span class="typeMissed">-</span><span class="typeGood">de</span>
+                        <br><span id="typearrow">⇩</span><br>
+                    <span class="typeGood">abc</span><span class="typeBad">c</span><span class="typeGood">de</span>
+                </code>`)
+        );
     });
 
-    it("doesn't add - in entrySpans directly after typeBad", () => { // because it's ommited from answer too
+    it("doesn't add - in entrySpans directly after typeBad", () => {
+        // because it's ommited from answer too
         /**
          * Issue: Addon shouldn't add - in entrySpans directly after typeBad.
          * User types: ykjavik
@@ -43,19 +49,25 @@ describe('compareInputToAnswer_function', () => {
          */
 
         // Setup
-        document.body.innerHTML =
-        /*html*/`<code id="typeans">
-        <span class="typeMissed">--</span><span class="typeGood">ykjav</span><span class="typeBad">i</span><span class="typeGood">k</span>
-            <br><span id="typearrow">↓</span><br>
-        <span class="typeMissed">Re</span><span class="typeGood">ykjav</span><span class="typeMissed">í</span><span class="typeGood">k</span>
-        </code>`;
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeMissed">--</span><span class="typeGood">ykjav</span><span class="typeBad">i</span><span class="typeGood">k</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeMissed">Re</span><span class="typeGood">ykjav</span><span class="typeMissed">í</span><span class="typeGood">k</span>
+        </code>`);
 
         // Exercise
         compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
-            /*html*/`<code id="typeans"><span class="typeMissed">-</span><span class="typeMissed">-</span><span class="typeGood">ykjav</span><span class="typeBad">i</span><span class="typeGood">k</span><br><span id="typearrow">⇩</span><br><span class="typeBad">Re</span><span class="typeGood">ykjav</span><span class="typeBad">í</span><span class="typeGood">k</span></code>`);
+            f(/*html*/ `
+            <code id="typeans">
+                <span class="typeMissed">-</span><span class="typeMissed">-</span><span class="typeGood">ykjav</span><span class="typeBad">i</span><span class="typeGood">k</span>
+                    <br><span id="typearrow">⇩</span><br>
+                <span class="typeBad">Re</span><span class="typeGood">ykjav</span><span class="typeBad">í</span><span class="typeGood">k</span>
+            </code>`)
+        );
     });
 
     it("doesn't add - in entrySpans, ONLY directly after typeBad", () => {
@@ -67,22 +79,28 @@ describe('compareInputToAnswer_function', () => {
          */
 
         // Setup
-        document.body.innerHTML =
-        /*html*/`<code id="typeans">
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
             <span class="typeGood">Indi</span><span class="typeMissed">-</span>
-            <br><span id="typearrow">↓</span><br>
+                <br><span id="typearrow">↓</span><br>
             <span class="typeGood">Indi</span><span class="typeBad">-</span>
-        </code>`;
+        </code>`);
 
         // Exercise
         compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
-            /*html*/`<code id="typeans"><span class="typeGood">Indi</span><span class="typeMissed">-</span><br><span id="typearrow">⇩</span><br><span class="typeGood">Indi</span><span class="typeBad">-</span></code>`);
+            f(/*html*/ `
+            <code id="typeans">
+                <span class="typeGood">Indi</span><span class="typeMissed">-</span>
+                    <br><span id="typearrow">⇩</span><br>
+                <span class="typeGood">Indi</span><span class="typeBad">-</span>
+            </code>`)
+        );
     });
 
-    it("recognizes user-typed hyphens", () => {
+    it('recognizes user-typed hyphens', () => {
         /**
          * Issue: Case when user types hyphen. hyphen can be interpreted as a missing letter too, so it should be marked as green if it's in the answer.
          * User types: A-bc
@@ -91,22 +109,27 @@ describe('compareInputToAnswer_function', () => {
          * Expected result: a-bc (all green)
          */
         // Setup
-        document.body.innerHTML =
-        /*html*/`<code id="typeans">
-        <span class="typeBad">A</span><span class="typeGood">-bc</span>
-        <br><span id="typearrow">↓</span><br>
-        <span class="typeMissed">a</span><span class="typeGood">-bc</span>
-        </code>`;
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeBad">A</span><span class="typeGood">-bc</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeMissed">a</span><span class="typeGood">-bc</span>
+        </code>`);
 
         // Exercise
         compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
-            /*html*/`<code id="typeans"><span class="typeGood">a</span><span class="typeGood">-bc</span></code>`);
+            f(/*html*/ `
+            <code id="typeans">
+                <span class="typeGood">a</span><span class="typeGood">-bc</span>
+            </code>`)
+        );
     });
 
-    it("trims the entry and the answer", () => { // to match the answer
+    it('trims the entry and the answer', () => {
+        // to match the answer
         /**
          * Issue: Case when the user types a leading/trailing space, especially when using voice input.
          * User types:  abc
@@ -116,18 +139,30 @@ describe('compareInputToAnswer_function', () => {
          */
 
         // Setup
-        document.body.innerHTML =
-        /*html*/`<code id="typeans">
-        <span class="typeBad"> </span><span class="typeGood">abc</span><span class="typeBad"> </span>
-        <br><span id="typearrow">↓</span><br>
-        <span class="typeGood">abc</span>
-        </code>`;
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeBad"> </span><span class="typeGood">abc</span><span class="typeBad"> </span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeGood">abc</span>
+        </code>`);
 
         // Exercise
         compareInputToAnswer(addon_config);
 
         // Verify
         expect(document.body.innerHTML).toEqual(
-            /*html*/`<code id="typeans"><span class="typeGood">abc</span></code>`);
+            f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">abc</span>
+        </code>`)
+        );
     });
-})
+});
+
+/**
+ * Removes whitespace between HTML tags and trims the string.
+ *
+ * @param {string} s - The input string containing HTML.
+ * @returns {string} - The processed string with no whitespace between tags and trimmed.
+ */
+const f = (s) => s.replace(/>\s+</g, '><').trim();
