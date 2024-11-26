@@ -48,7 +48,7 @@ function constructLetters(listElems) {
  * @returns {boolean} - Returns true if the character is a punctuation mark, otherwise false.
  */
 function isPunctuation(char) {
-    return /[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/.test(char);
+    return /[!"#$%&'()*+,-./:;<=>¿?@[\]^_`{|}~]/.test(char);
 }
 
 /**

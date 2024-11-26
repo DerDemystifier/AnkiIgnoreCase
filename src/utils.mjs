@@ -157,8 +157,13 @@ function compareInputToAnswer(addon_config) {
             recon_answerSpans.push(answer_span);
         });
 
-        // Finally display the new spans in the comparison area.
-        comparison_area.innerHTML = `${recon_entrySpans.join('')}<br><span id="typearrow">⇩</span><br>${recon_answerSpans.join('')}`;
+        if (recon_answerSpans.every((span) => span.includes('typeGood'))) {
+            // if answer only has typeGood spans, then we want to only show the answer.
+            comparison_area.innerHTML = recon_answerSpans.join('');
+        } else {
+            // else display the new spans in the comparison area.
+            comparison_area.innerHTML = `${recon_entrySpans.join('')}<br><span id="typearrow">⇩</span><br>${recon_answerSpans.join('')}`;
+        }
     }
 }
 
