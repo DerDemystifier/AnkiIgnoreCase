@@ -5,8 +5,10 @@ import shutil
 from typing import Any, Dict
 
 from anki.cards import Card
-from aqt import gui_hooks, mw
+from aqt import QCheckBox, QDialog, QPushButton, QVBoxLayout, gui_hooks, mw
 from aqt.addons import AddonMeta, AddonsDialog
+from aqt.qt import qconnect
+from aqt.utils import showInfo
 
 from .globals import (
     ADDON_PATH,
@@ -23,6 +25,63 @@ from .utils import (
     removeScriptTag,
     writeToFile,
 )
+
+
+def open_config_dialog():
+    config = __addon_config__
+
+    if not mw or not config:
+        showInfo("Cannot open configuration dialog.")
+        return
+
+    # Create a dialog
+    dialog = QDialog(mw)
+    dialog.setWindowTitle(__name__ + " | Add-on Configuration")
+
+    # Create layout and widgets
+    layout = QVBoxLayout()
+    ignore_case_cb = QCheckBox("Ignore Case")
+    ignore_case_cb.setChecked(config.get("ignore_case", True))
+
+    ignore_accents_cb = QCheckBox("Ignore Accents")
+    ignore_accents_cb.setChecked(config.get("ignore_accents", False))
+
+    ignore_punct_cb = QCheckBox("Ignore Punctuations")
+    ignore_punct_cb.setChecked(config.get("ignore_punctuations", False))
+
+    # Add widgets to layout
+    layout.addWidget(ignore_case_cb)
+    layout.addWidget(ignore_accents_cb)
+    layout.addWidget(ignore_punct_cb)
+
+    # Save button
+    save_button = QPushButton("Save")
+
+    def save_settings():
+        if not mw:
+            return
+
+        new_config = {
+            "ignore_case": ignore_case_cb.isChecked(),
+            "ignore_accents": ignore_accents_cb.isChecked(),
+            "ignore_punctuations": ignore_punct_cb.isChecked(),
+        }
+
+        # Save the settings
+        mw.addonManager.writeConfig(
+            __name__,
+            new_config,
+        )
+        dialog.accept()
+
+        on_config_save(json.dumps(new_config), __name__)
+
+    qconnect(save_button.clicked, save_settings)
+    layout.addWidget(save_button)
+
+    # Set layout and show dialog
+    dialog.setLayout(layout)
+    dialog.exec()
 
 
 def addon_script_tag() -> str:
@@ -167,7 +226,7 @@ def inspectAllNoteTypes(intent: str = "install") -> None:
 
 
 def setupAddon():
-    global __config_timestamp__
+    global __config_timestamp__, __addon_config__
     if not media_collection_dir:
         return
 
@@ -201,7 +260,7 @@ def startupCheck() -> None:
     # Check if either the it's a fresh install or a new version
     if not all(
         (
-            __config_timestamp__,  # __config_timestamp__ is None if there's no config file found
+            __config_timestamp__,  # __config_timestamp__ is None if there's no CONFIG_TIMESTAMP file found
             os.path.exists(
                 os.path.join(media_collection_dir, f"_smarterTypeField.min{__version__}.js")
             ),
@@ -213,6 +272,8 @@ def startupCheck() -> None:
 
     # Call the function to insert the script tag
     inspectAllNoteTypes()
+
+    mw.addonManager.setConfigAction(__name__, open_config_dialog)
 
 
 @gui_hooks.card_will_show.append
@@ -260,7 +321,6 @@ def on_addons_dialog_did_change_selected_addon(dialog: AddonsDialog, addon: Addo
         inspectAllNoteTypes()
 
 
-@gui_hooks.addon_config_editor_will_update_json.append
 def on_config_save(config_text: str, addon: str) -> str:
     """
     Triggered when the user saves the configuration of the add-on.\n
@@ -283,6 +343,9 @@ def on_config_save(config_text: str, addon: str) -> str:
     inspectAllNoteTypes()
 
     return config_text
+
+
+gui_hooks.addon_config_editor_will_update_json.append(on_config_save)
 
 
 @gui_hooks.addons_dialog_will_delete_addons.append
