@@ -317,6 +317,132 @@ describe('ignore_accents tests', () => {
     });
 });
 
+describe('ignore_punctuations tests', () => {
+    it('Ignores Extended Punctuation', () => {
+        /**
+         * Issue: Case when there's a punctuation mismatch.
+         * User types: Good morning
+         * Answer is : Good morning...!
+         * Vanilla result: ...! are marked as missed
+         * Expected result: All green
+         */
+
+        addon_config.ignore_punctuations = true;
+
+        // Setup
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">Good morning</span><span class="typeMissed">----</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeGood">Good morning</span><span class="typeMissed">...!</span>
+        </code>`);
+
+        // Exercise
+        compareInputToAnswer(addon_config);
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            f(/*html*/ `
+            <code id="typeans">
+                <span class="typeGood">Good morning</span><span class="typeGood">...!</span>
+            </code>`)
+        );
+    });
+
+    it('Ignores Punctuations when Punctuation Only', () => {
+        /**
+         * Issue: Case when there's a punctuation mismatch.
+         * User types: !
+         * Answer is : !!!
+         * Vanilla result: !! are marked as missed
+         * Expected result: All green
+         */
+
+        addon_config.ignore_punctuations = true;
+
+        // Setup
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeGood">!</span><span class="typeMissed">--</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeGood">!</span><span class="typeMissed">!!</span>
+        </code>`);
+
+        // Exercise
+        compareInputToAnswer(addon_config);
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            f(/*html*/ `
+            <code id="typeans">
+                <span class="typeGood">!</span><span class="typeGood">!!</span>
+            </code>`)
+        );
+    });
+
+    it('Ignores International Punctuation', () => {
+        /**
+         * Issue: Case when answer contains certain international punctuation.
+         * User types: Como estas
+         * Answer is : ¿Cómo estás?
+         * Vanilla result: ¿, ? are marked as missed
+         * Expected result: All green
+         */
+
+        addon_config.ignore_punctuations = true;
+
+        // Setup
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeMissed">-</span><span class="typeGood">C</span><span class="typeBad">o</span><span class="typeGood">mo est</span><span class="typeBad">a</span><span class="typeGood">s</span><span class="typeMissed">-</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeMissed">¿</span><span class="typeGood">C</span><span class="typeMissed">ó</span><span class="typeGood">mo est</span><span class="typeMissed">á</span><span class="typeGood">s</span><span class="typeMissed">?</span>
+        </code>`);
+
+        // Exercise
+        compareInputToAnswer(addon_config);
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            f(/*html*/ `
+            <code id="typeans">
+                <span class="typeGood">¿</span><span class="typeGood">Cómo estás</span><span class="typeGood">?</span>
+            </code>`)
+        );
+    });
+
+    it('Ignores Apostrophes and Quotes', () => {
+        /**
+         * Issue: Case when answer contains apostrophes and quotes.
+         * User types: Its a test
+         * Answer is : "It's a test."
+         * Vanilla result: ", ' and . are marked as missed
+         * Expected result: All green
+         */
+
+        addon_config.ignore_punctuations = true;
+
+        // Setup
+        document.body.innerHTML = f(/*html*/ `
+        <code id="typeans">
+            <span class="typeMissed">-</span><span class="typeGood">It</span><span class="typeMissed">-</span><span class="typeGood">s a test</span><span class="typeMissed">--</span>
+                <br><span id="typearrow">↓</span><br>
+            <span class="typeMissed">"</span><span class="typeGood">It</span><span class="typeMissed">'</span><span class="typeGood">s a test</span><span class="typeMissed">."</span>
+        </code>`);
+
+        // Exercise
+        compareInputToAnswer(addon_config);
+
+        // Verify
+        expect(document.body.innerHTML).toEqual(
+            f(/*html*/ `
+            <code id="typeans">
+                <span class="typeGood">"</span><span class="typeGood">It</span><span class="typeGood">'</span><span class="typeGood">s a test</span><span class="typeGood">."</span>
+            </code>`)
+        );
+    });
+});
+
 /**
  * Removes whitespace between HTML tags and trims the string.
  *
