@@ -45,7 +45,7 @@ def removeScriptTag(template: str) -> str:
     Remove specific <script> tags from the given HTML template string.
 
     This function uses regular expressions to remove any <script> tags with
-    the role attribute set to 'ignoreCase' or 'smarterTypeField' from the
+    the role attribute set to 'smarterTypeField' from the
     provided HTML template string. The function then strips any leading or
     trailing whitespace from the resulting string.
 
@@ -59,7 +59,7 @@ def removeScriptTag(template: str) -> str:
     """
     template = re.sub(
         "<script role='ignoreCase'.+script>", "", template, flags=re.IGNORECASE
-    )  # Remove this in later versions
+    )  # Remove this line in later versions
     template = re.sub("<script role='smarterTypeField'.+script>", "", template, flags=re.IGNORECASE)
     template = template.strip()
     return template

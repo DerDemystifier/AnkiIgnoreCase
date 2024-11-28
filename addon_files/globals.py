@@ -45,9 +45,9 @@ def updateVersionFile() -> None:
 
 # updateVersionFile()  # Uncomment this line while developing the add-on to update the version file on each run
 
-__addon_name__ = None  # can be just a literal string too, but this is more dynamic
+__addon_id__ = None  # this is the name of the add-on folder, a number assigned by AnkiWeb
 if mw and mw.addonManager:
-    __addon_name__ = mw.addonManager.addonName(__name__)
+    __addon_id__ = mw.addonManager.addonFromModule(__name__)
 
 media_collection_dir = None
 if mw and mw.col:

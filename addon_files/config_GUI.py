@@ -18,7 +18,7 @@ def open_config_dialog():
 
     # Create a dialog
     dialog = QDialog(mw)
-    dialog.setWindowTitle(g.__addon_name__ + " | Add-on Configuration")
+    dialog.setWindowTitle("Add-on Configuration")
 
     # Create layout and widgets
     layout = QVBoxLayout()
@@ -51,12 +51,12 @@ def open_config_dialog():
 
         # Save the settings
         mw.addonManager.writeConfig(
-            g.__addon_name__,
+            g.__addon_id__,
             new_config,
         )
         dialog.accept()
 
-        on_config_save(json.dumps(new_config), g.__addon_name__)
+        on_config_save(json.dumps(new_config), g.__addon_id__)
 
     qconnect(save_button.clicked, save_settings)
     layout.addWidget(save_button)

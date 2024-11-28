@@ -50,12 +50,12 @@ def getConfig() -> dict[str, Any]:
         return {}
 
     # Fetch the configuration from the addon manager or load the default from the config file
-    config = mw.addonManager.getConfig(g.__addon_name__) or json.loads(
+    config = mw.addonManager.getConfig(g.__addon_id__) or json.loads(
         readFile(os.path.join(g.ADDON_PATH, "config.json")) or "{}"
     )
 
     # Update the configuration with the addon 'enabled' status
-    config.update({"enabled": mw.addonManager.isEnabled(g.__addon_name__)})
+    config.update({"enabled": mw.addonManager.isEnabled(g.__addon_id__)})
     return config
 
 
@@ -83,7 +83,7 @@ def updateConfigFile(config: Dict[str, Any] = {}) -> tuple[dict[str, Any], str]:
         config = getConfig()
     else:
         # If config is provided, just update the 'enabled' status
-        config.update({"enabled": mw.addonManager.isEnabled(g.__addon_name__)})
+        config.update({"enabled": mw.addonManager.isEnabled(g.__addon_id__)})
 
     if g.__config_timestamp__:
         # if a config was previously saved, check if the new config is the same as the old config
@@ -185,7 +185,7 @@ def setupAddon():
     filename_save = f"_smarterTypeField.min{g.__version__}.js"
 
     # copy file to media folder after deleting all previous versions
-    delete_all_deps(g.media_collection_dir, "_ignoreCase")  # Remove this in later versions
+    delete_all_deps(g.media_collection_dir, "_ignoreCase")  # Remove this line in later versions
     delete_all_deps(g.media_collection_dir, "_smarterTypeField.min")
     shutil.copyfile(path_js, os.path.join(g.media_collection_dir, filename_save))
 
@@ -205,7 +205,7 @@ def on_config_save(config_text: str, addon: str) -> str:
         str: The original configuration text.
     """
 
-    if not mw or not mw.addonManager or addon != g.__addon_name__:
+    if not mw or not mw.addonManager or addon != g.__addon_id__:
         return config_text
 
     # Update the global g.__addon_config__ variable with the parsed g.__addon_config__

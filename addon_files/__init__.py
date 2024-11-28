@@ -48,7 +48,7 @@ def startupCheck() -> None:
     # Call the function to insert the script tag
     inspectAllNoteTypes()
 
-    mw.addonManager.setConfigAction(g.__addon_name__, open_config_dialog)
+    mw.addonManager.setConfigAction(g.__addon_id__, open_config_dialog)
 
 
 @gui_hooks.card_will_show.append
@@ -91,7 +91,7 @@ def on_addons_dialog_did_change_selected_addon(dialog: AddonsDialog, addon: Addo
         return
 
     if g.__addon_config__ and g.__addon_config__.get("enabled") != mw.addonManager.isEnabled(
-        g.__addon_name__
+        g.__addon_id__
     ):
         g.__addon_config__, g.__config_timestamp__ = updateConfigFile()
         inspectAllNoteTypes()
@@ -112,6 +112,6 @@ def on_addons_dialog_will_delete_addons(dialog: AddonsDialog, addon_ids: list[st
     if not mw or not mw.col or not g.media_collection_dir:
         raise Exception("SmarterTypeField: An error occurred while uninstalling the addon.")
 
-    if g.__addon_name__ in addon_ids:
+    if g.__addon_id__ in addon_ids:
         inspectAllNoteTypes("uninstall")
-        delete_all_deps(g.media_collection_dir, "_smarterTypeField.min")
+        delete_all_deps(g.media_collection_dir, "_smarterTypeField")
