@@ -78,7 +78,7 @@ Simply add this line to the Back Template of your Anki Cards.
 ### How to uninstall?
 
 >Go to Addons->SmarterTypeField->Click "delete addon". This will also automatically clean up the script tag from your cards.
-> If you had opted for manual install, then you need to manually uninstalling by retracing the steps. Basically, delete the `<script>` tag from your card(s).
+> If you had opted for manual install, then you need to manually uninstall it by retracing manual installation the steps. Basically, delete the `<script>` tag from your card(s).
 
 ### Does this work in Anki Version 2.x.xx
 
