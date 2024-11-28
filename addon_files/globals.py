@@ -1,5 +1,3 @@
-import os
-
 """
 This module contains global variables and utility functions for the SmarterTypeField Anki add-on.
 
@@ -17,11 +15,12 @@ Variables:
     __config_timestamp__ (Union[str, None]): The configuration timestamp, read from the configuration timestamp file.
     __addon_config__ (Union[dict[str, Any], None]): The configuration of the add-on, initially set to None.
 """
+import os
 from typing import Any, Union
 
 from aqt import mw
 
-from .utils import readFile, writeToFile, currentTimestamp
+from .utils import currentTimestamp, readFile, writeToFile
 
 ADDON_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
@@ -45,6 +44,10 @@ def updateVersionFile() -> None:
 
 
 # updateVersionFile()  # Uncomment this line while developing the add-on to update the version file on each run
+
+__addon_name__ = None  # can be just a literal string too, but this is more dynamic
+if mw and mw.addonManager:
+    __addon_name__ = mw.addonManager.addonName(__name__)
 
 media_collection_dir = None
 if mw and mw.col:
