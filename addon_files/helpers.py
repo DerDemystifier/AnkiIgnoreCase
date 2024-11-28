@@ -85,6 +85,21 @@ def updateConfigFile(config: Dict[str, Any] = {}) -> tuple[dict[str, Any], str]:
         # If config is provided, just update the 'enabled' status
         config.update({"enabled": mw.addonManager.isEnabled(g.__addon_name__)})
 
+    if g.__config_timestamp__:
+        # if a config was previously saved, check if the new config is the same as the old config
+
+        # parse config file from the json file (if it exists)
+        old_config = json.loads(
+            readFile(
+                os.path.join(g.ADDON_PATH, f"_smarterTypeField.config{g.__config_timestamp__}.json")
+            )
+            or "{}"
+        )
+
+        # if the config is the same as the old config, just return the old config, no need to update
+        if config == old_config:
+            return (config, g.__config_timestamp__)
+
     timestamp = currentTimestamp()
     delete_all_deps(g.media_collection_dir, "_smarterTypeField.config")
 
