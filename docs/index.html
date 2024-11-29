@@ -72,19 +72,6 @@
             </li>
         </ul>
         <p>Simply install <a href="https://ankiweb.net/shared/info/1371444066">the addon</a> on your AnkiDesktop. The changes made by the addon will apply to both AnkiDesktop and AnkiDroid. </p>
-        <ul>
-            <li>
-                <h4 id="manual-install">Manual install</h4>
-            </li>
-        </ul>
-        <p>Simply add this line to the Back Template of your Anki Cards.</p>
-        <div class="language-html highlighter-rouge">
-            <div class="highlight">
-                <pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">src=</span><span class="s">"https://derdemystifier.github.io/SmarterTypeField/smarterTypeField.min.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-</code></pre>
-            </div>
-        </div>
-
 
         <h2 id="faq">FAQ</h2>
 
@@ -129,7 +116,7 @@
         <h3 id="how-does-this-work">How does this work?</h3>
 
         <blockquote>
-            <p>As you would think, simply compares your input with the answer without matching case. So ANKI ↔ Anki. Technically speaking, it injects a script tag to your card templates that have a {{type:}} field. It doesn't touch any existing code in the template. The script enables the addon to work both on AnkiDesktop and AnkiDroid.</p>
+            <p>This add-on checks what you type against the correct answer without worrying about uppercase/lowercase letters, accents, or punctuation. For example, "ÀNKI!" and "Anki" can be treated the same based on your settings. It adds a script to your card templates that use the `{{type:}}` field without changing any existing code. This makes the add-on work on **AnkiDesktop**, **AnkiDroid**, and **AnkiMobile**.</p>
         </blockquote>
 
         <h3 id="does-this-work-in-anki-version-2xxx">How to uninstall?</h3>
